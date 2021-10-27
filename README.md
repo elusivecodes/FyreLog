@@ -7,6 +7,7 @@
 - [Installation](#installation)
 - [Methods](#methods)
 - [Loggers](#loggers)
+- [Logging](#logging)
 
 
 
