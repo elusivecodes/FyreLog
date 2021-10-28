@@ -142,7 +142,7 @@ Log::info($message, $data);        // 7
 Log::debug($message, $data);       // 8
 ```
 
-There are default placeholders for server data that can be used:
+There are default placeholders that can also be used in log messages:
 
 - *{post_vars}* will be replaced with the `$_POST` data.
 - *{get_vars}* will be replaced with the `$_GET_` data.
