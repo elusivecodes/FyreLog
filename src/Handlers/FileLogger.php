@@ -30,7 +30,8 @@ class FileLogger extends Logger
 {
 
     protected static array $defaults = [
-        'path' => '/var/log/'
+        'path' => '/var/log/',
+        'maxSize' => 1048576
     ];
 
     /**
@@ -40,13 +41,13 @@ class FileLogger extends Logger
      */
     public function __construct(array $config = [])
     {
-        $config['path'] = rtrim($config['path'], DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR;
-
-        if (!is_dir($config['path']) && !mkdir($config['path'], 0777, true)) {
-            throw LogException::forInvalidPath($config['path']);
-        }
-
         parent::__construct($config);
+
+        $this->config['path'] = rtrim($this->config['path'], DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR;
+
+        if (!is_dir($this->config['path']) && !mkdir($this->config['path'], 0777, true)) {
+            throw LogException::forInvalidPath($this->config['path']);
+        }
     }
 
     /**
@@ -58,7 +59,7 @@ class FileLogger extends Logger
     {
         $filePath = $this->config['path'].$type.'.log';
 
-        if (file_exists($filePath) && filesize($filePath) > 1048576) {
+        if (file_exists($filePath) && filesize($filePath) > $this->config['maxSize']) {
             $oldPath = $this->config['path'].$type.'.'.time().'.log';
             rename($filePath, $oldPath);
         }

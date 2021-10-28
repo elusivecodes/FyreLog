@@ -128,13 +128,26 @@ This will call the `canHandle` method of all defined logger configs, and if that
 
 The default log levels are shown below (in order of severity).
 
+- `$message` is a string representing the log message.
+- `$data` is an array containing data to insert into the message string.
+
 ```php
-Log::emergency($message);   // 1
-Log::alert($message);       // 2
-Log::critical($message);    // 3
-Log::error($message);       // 4
-Log::warning($message);     // 5
-Log::notice($message);      // 6
-Log::info($message);        // 7
-Log::debug($message);       // 8
+Log::emergency($message, $data);   // 1
+Log::alert($message, $data);       // 2
+Log::critical($message, $data);    // 3
+Log::error($message, $data);       // 4
+Log::warning($message, $data);     // 5
+Log::notice($message, $data);      // 6
+Log::info($message, $data);        // 7
+Log::debug($message, $data);       // 8
 ```
+
+There are default placeholders for server data that can be used:
+
+- *{post_vars}* will be replaced with the `$_POST` data.
+- *{get_vars}* will be replaced with the `$_GET_` data.
+- *{server_vars}* will be replaced with the `$_SERVER_` data.
+- *{session_vars}* will be replaced with the `$_SESSION` data.
+- *{backtrace}* will be replaced with the backtrace.
+
+See the [*MessageFormatter::formatMessage*](https://www.php.net/manual/en/messageformatter.formatmessage.php) method for details about message formatting.
