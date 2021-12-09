@@ -16,7 +16,7 @@
 **Using Composer**
 
 ```
-composer install fyre/log
+composer require fyre/log
 ```
 
 In PHP:
