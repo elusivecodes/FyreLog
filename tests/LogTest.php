@@ -41,7 +41,7 @@ final class LogTest extends TestCase
         }
     }
 
-    public function testLogData(): void
+    public function testData(): void
     {
         foreach ($this->levels AS $type => $threshold) {
             Log::$type('{0}', ['test']);
@@ -53,7 +53,7 @@ final class LogTest extends TestCase
         }
     }
 
-    public function testLogSkipped(): void
+    public function testSkipped(): void
     {
         foreach ($this->levels AS $type => $threshold) {
             Log::clear();
@@ -68,7 +68,7 @@ final class LogTest extends TestCase
         }
     }
 
-    public function testLogInterpolatePost(): void
+    public function testInterpolatePost(): void
     {
         foreach ($this->levels AS $type => $threshold) {
             Log::$type('{post_vars}');
@@ -80,7 +80,7 @@ final class LogTest extends TestCase
         }
     }
 
-    public function testLogInterpolateGet(): void
+    public function testInterpolateGet(): void
     {
         foreach ($this->levels AS $type => $threshold) {
             Log::$type('{get_vars}');
@@ -92,7 +92,7 @@ final class LogTest extends TestCase
         }
     }
 
-    public function testLogInterpolateServer(): void
+    public function testInterpolateServer(): void
     {
         foreach ($this->levels AS $type => $threshold) {
             Log::$type('{server_vars}');
@@ -104,7 +104,7 @@ final class LogTest extends TestCase
         }
     }
 
-    public function testLogAppends(): void
+    public function testAppends(): void
     {
         Log::debug('test1');
         Log::debug('test2');
@@ -120,14 +120,14 @@ final class LogTest extends TestCase
         );
     }
 
-    public function testLogInvalidLevel(): void
+    public function testInvalidLevel(): void
     {
         $this->expectException(BadMethodCallException::class);
 
         Log::invalid('test');
     }
 
-    public function testLogInvalidHandler(): void
+    public function testInvalidHandler(): void
     {
         $this->expectException(LogException::class);
 
