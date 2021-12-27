@@ -29,7 +29,6 @@ class FileLogger extends Logger
     /**
      * New Logger constructor.
      * @param array $config Options for the handler.
-     * @throws LogException if the path is invalid.
      */
     public function __construct(array $config = [])
     {
