@@ -4,8 +4,92 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "dad8dd40c37cd7e360148e9e01f0e7c3",
-    "packages": [],
+    "content-hash": "a1a20ec3fa25ae09f3d545b97d91e92d",
+    "packages": [
+        {
+            "name": "fyre/filesystem",
+            "version": "v1.0.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/elusivecodes/FyreFileSystem.git",
+                "reference": "a6de5e2b4565b116d63ee4c73fdb78561822c989"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/elusivecodes/FyreFileSystem/zipball/a6de5e2b4565b116d63ee4c73fdb78561822c989",
+                "reference": "a6de5e2b4565b116d63ee4c73fdb78561822c989",
+                "shasum": ""
+            },
+            "require": {
+                "fyre/path": "^1.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^9"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Fyre\\FileSystem\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "elusivecodes",
+                    "email": "elusivecodes@gmail.com"
+                }
+            ],
+            "description": "A file/folder library.",
+            "support": {
+                "issues": "https://github.com/elusivecodes/FyreFileSystem/issues",
+                "source": "https://github.com/elusivecodes/FyreFileSystem/tree/v1.0.2"
+            },
+            "time": "2021-12-27T05:37:52+00:00"
+        },
+        {
+            "name": "fyre/path",
+            "version": "v1.0.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/elusivecodes/FyrePath.git",
+                "reference": "dd0bc41c63b6cc18ac2c9d7a81beb20f4f125a1a"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/elusivecodes/FyrePath/zipball/dd0bc41c63b6cc18ac2c9d7a81beb20f4f125a1a",
+                "reference": "dd0bc41c63b6cc18ac2c9d7a81beb20f4f125a1a",
+                "shasum": ""
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^9"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Fyre\\Utility\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "elusivecodes",
+                    "email": "elusivecodes@gmail.com"
+                }
+            ],
+            "description": "A path utility library.",
+            "support": {
+                "issues": "https://github.com/elusivecodes/FyrePath/issues",
+                "source": "https://github.com/elusivecodes/FyrePath/tree/v1.0.2"
+            },
+            "time": "2021-12-27T05:36:56+00:00"
+        }
+    ],
     "packages-dev": [
         {
             "name": "doctrine/instantiator",

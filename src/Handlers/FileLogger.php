@@ -4,8 +4,10 @@ declare(strict_types=1);
 namespace Fyre\Log\Handlers;
 
 use
-    Fyre\Handlers\LogException,
+    Fyre\FileSystem\File,
+    Fyre\FileSystem\Folder,
     Fyre\Log\Logger,
+    Fyre\Utility\Path,
     MessageFormatter;
 
 use const
@@ -34,6 +36,8 @@ class FileLogger extends Logger
         'maxSize' => 1048576
     ];
 
+    protected string $path;
+
     /**
      * New Logger constructor.
      * @param array $config Options for the handler.
@@ -43,11 +47,9 @@ class FileLogger extends Logger
     {
         parent::__construct($config);
 
-        $this->config['path'] = rtrim($this->config['path'], DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR;
+        $folder = new Folder($this->config['path'], true);
 
-        if (!is_dir($this->config['path']) && !mkdir($this->config['path'], 0777, true)) {
-            throw LogException::forInvalidPath($this->config['path']);
-        }
+        $this->path = $folder->path();
     }
 
     /**
@@ -57,22 +59,33 @@ class FileLogger extends Logger
      */
     public function handle(string $type, string $message): void
     {
-        $filePath = $this->config['path'].$type.'.log';
+        $file = $type.'.log';
+        $filePath = Path::resolve($this->path, $type.'.log');
 
-        if (file_exists($filePath) && filesize($filePath) > $this->config['maxSize']) {
-            $oldPath = $this->config['path'].$type.'.'.time().'.log';
-            rename($filePath, $oldPath);
+        $file = new File($filePath, true);
+        $file
+            ->open('a')
+            ->lock();
+
+        if ($file->size() > $this->config['maxSize']) {
+            $oldPath = Path::resolve($this->path, $type.'.'.time().'.log');
+
+            $file
+                ->copy($oldPath)
+                ->close()
+                ->open('w')
+                ->lock();
         }
 
-        file_put_contents(
-            $filePath,
-            MessageFormatter::formatMessage('en', '{0} - {2}'."\r\n", [
-                date($this->config['dateFormat']),
-                $type,
-                $message
-            ]),
-            FILE_APPEND | LOCK_EX
-        );
+        $message = MessageFormatter::formatMessage('en', '{0} - {2}'."\r\n", [
+            date($this->config['dateFormat']),
+            $type,
+            $message
+        ]);
+
+        $file
+            ->write($message)
+            ->close();
     }
 
 }

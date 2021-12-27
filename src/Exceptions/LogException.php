@@ -17,9 +17,4 @@ class LogException extends RunTimeException
         return new static('Log handler class not found: '.$className);
     }
 
-    public static function forInvalidPath(string $path)
-    {
-        return new static('Invalid file path: '.$path);
-    }
-
 }
