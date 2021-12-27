@@ -20,7 +20,8 @@
         }
     },
     "require": {
-        "fyre/filesystem": "^1.0"
+        "fyre/filesystem": "^1.0",
+        "fyre/path": "^1.0"
     },
     "require-dev": {
         "phpunit/phpunit": "^9"
