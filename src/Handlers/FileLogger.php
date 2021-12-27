@@ -5,25 +5,13 @@ namespace Fyre\Log\Handlers;
 
 use
     Fyre\FileSystem\File,
-    Fyre\FileSystem\Folder,
     Fyre\Log\Logger,
     Fyre\Utility\Path,
     MessageFormatter;
 
-use const
-    FILE_APPEND,
-    LOCK_EX;
-
 use function
-    array_key_exists,
     date,
-    file_exists,
-    filesize,
-    is_dir,
-    mkdir,
-    rename,
-    time,
-    write_file;
+    time;
 
 /**
  * FileLogger
@@ -47,9 +35,7 @@ class FileLogger extends Logger
     {
         parent::__construct($config);
 
-        $folder = new Folder($this->config['path'], true);
-
-        $this->path = $folder->path();
+        $this->path = Path::resolve($this->config['path']);
     }
 
     /**
@@ -60,7 +46,7 @@ class FileLogger extends Logger
     public function handle(string $type, string $message): void
     {
         $file = $type.'.log';
-        $filePath = Path::resolve($this->path, $type.'.log');
+        $filePath = Path::join($this->path, $type.'.log');
 
         $file = new File($filePath, true);
         $file
@@ -68,7 +54,7 @@ class FileLogger extends Logger
             ->lock();
 
         if ($file->size() > $this->config['maxSize']) {
-            $oldPath = Path::resolve($this->path, $type.'.'.time().'.log');
+            $oldPath = Path::join($this->path, $type.'.'.time().'.log');
 
             $file
                 ->copy($oldPath)
