@@ -25,7 +25,7 @@ abstract class Logger
      */
     public function __construct(array $config = [])
     {
-        $this->config = array_replace_recursive(static::$defaults, self::$defaults, $config);
+        $this->config = array_replace_recursive(self::$defaults, static::$defaults, $config);
     }
 
     /**
