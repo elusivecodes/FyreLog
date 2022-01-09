@@ -28,11 +28,11 @@ class FileLogger extends Logger
 
     /**
      * New Logger constructor.
-     * @param array $config Options for the handler.
+     * @param array $options Options for the handler.
      */
-    public function __construct(array $config = [])
+    public function __construct(array $options = [])
     {
-        parent::__construct($config);
+        parent::__construct($options);
 
         $this->path = Path::resolve($this->config['path']);
     }

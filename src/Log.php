@@ -63,31 +63,31 @@ abstract class Log
 
     /**
      * Load a handler.
-     * @param array $config Options for the handler.
+     * @param array $options Options for the handler.
      * @return Logger The handler.
      * @throws LogException if the handler is invalid.
      */
-    public static function load(array $config = []): Logger
+    public static function load(array $options = []): Logger
     {
-        if (!array_key_exists('className', $config)) {
+        if (!array_key_exists('className', $options)) {
             throw LogException::forInvalidClass();
         }
 
-        if (!class_exists($config['className'], true)) {
-            throw LogException::forInvalidClass($config['className']);
+        if (!class_exists($options['className'], true)) {
+            throw LogException::forInvalidClass($options['className']);
         }
 
-        return new $config['className']($config);
+        return new $options['className']($options);
     }
 
     /**
      * Set handler config.
      * @param string $key The config key.
-     * @param array $config The config options.
+     * @param array $options The config options.
      */
-    public static function setConfig(string $key, array $config): void
+    public static function setConfig(string $key, array $options): void
     {
-        static::$config[$key] = $config;
+        static::$config[$key] = $options;
     }
 
     /**
