@@ -7,6 +7,7 @@
 - [Installation](#installation)
 - [Methods](#methods)
 - [Loggers](#loggers)
+    - [File](#file)
 - [Logging](#logging)
 
 
@@ -36,23 +37,47 @@ Clear instances and configs.
 Log::clear();
 ```
 
+**Get Config**
+
+Set a logger config.
+
+- `$key` is a string representing the logger key.
+
+```php
+$config = Log::getConfig($key);
+```
+
+Alternatively, if the `$key` argument is omitted an array containing all configurations will be returned.
+
+```php
+$config = Log::getConfig();
+```
+
 **Set Config**
 
 Set the logger config.
 
 - `$key` is a string representing the logger key.
-- `$config` is an array containing configuration data.
+- `$options` is an array containing configuration options.
 
 ```php
-Log::setConfig($key, $config);
+Log::setConfig($key, $options);
 ```
 
-**Clear**
-
-Clear instances.
+Alternatively, a single array can be provided containing key/value of configuration options.
 
 ```php
-Log::clear();
+Log::setConfig($config);
+```
+
+**Unload**
+
+Unload a logger.
+
+- `$key` is a string representing the logger key, and will default to *"default"*.
+
+```php
+Log::unload($key);
 ```
 
 **Load**
@@ -91,9 +116,6 @@ $logger = Log::use($key);
 
 You can load a specific logger by specifying the `className` option of the `$config` variable above.
 
-The default logger are:
-- `\Fyre\Log\Handlers\FileLogger`
-
 Custom loggers can be created by extending `\Fyre\Log\Logger`, ensuring all below methods are implemented.
 
 **Can Handle**
@@ -106,7 +128,7 @@ Determine if a log level can be handled.
 $canHandle = $logger->canHandle($level);
 ```
 
-By default, this method will return *TRUE* if the `$level` is below or equal to the `threshold` defined in the logger config, otherwise *FALSE*.
+By default, this method will return *true* if the `$level` is below or equal to the `threshold` defined in the logger config, otherwise *false*.
 
 **Handle**
 
@@ -120,11 +142,30 @@ $logger->handle($type, $message);
 ```
 
 
+### File
+
+The File logger can be loaded using custom configuration.
+
+- `$key` is a string representing the logger key.
+- `$options` is an array containing configuration options.
+    - `className` must be set to `\Fyre\Log\Handlers\FileLogger`.
+    - `dateFormat` is a string representing the date format, and will default to "*Y-m-d H:i:s*".
+    - `threshold` is a number representing the log threshold, and will default to *0*.
+    - `path` is a string representing the directory path, and will default to "*/var/log*".
+    - `maxSize` is a number representing the maximum file size before log rotation, and will default to *1048576*.
+
+```php
+Log::setConfig($key, $options);
+
+$logger = Log::use($key);
+```
+
+
 ## Logging
 
 Generally, logging is done by calling the static methods of the *Log* class.
 
-This will call the `canHandle` method of all defined logger configs, and if that returns *TRUE* then the `handle` method will also be called.
+This will call the `canHandle` method of all defined logger configs, and if that returns *true* then the `handle` method will also be called.
 
 The default log levels are shown below (in order of severity).
 

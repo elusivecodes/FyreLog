@@ -13,6 +13,7 @@ use function
     call_user_func_array,
     class_exists,
     debug_backtrace,
+    is_array,
     print_r,
     strpos;
 
@@ -82,12 +83,39 @@ abstract class Log
 
     /**
      * Set handler config.
-     * @param string $key The config key.
-     * @param array $options The config options.
+     * @param string|array $key The config key.
+     * @param array|null $options The config options.
+     * @throws LogException if the config is invalid.
      */
-    public static function setConfig(string $key, array $options): void
+    public static function setConfig(string|array $key, array|null $options = null): void
     {
+        if (is_array($key)) {
+            foreach ($key AS $k => $value) {
+                static::setConfig($k, $value);
+            }
+
+            return;
+        }
+
+        if (!is_array($options)) {
+            throw LogException::forInvalidConfig($key);
+        }
+
+        if (array_key_exists($key, static::$config)) {
+            throw LogException::forConfigExists($key);
+        }
+
         static::$config[$key] = $options;
+    }
+
+    /**
+     * Unload a handler.
+     * @param string $key The config key.
+     */
+    public static function unload(string $key = 'default'): void
+    {
+        unset(static::$instances[$key]);
+        unset(static::$config[$key]);
     }
 
     /**
