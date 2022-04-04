@@ -4,12 +4,12 @@ declare(strict_types=1);
 namespace Fyre\Log\Exceptions;
 
 use
-    RunTimeException;
+    Fyre\Error\Exceptions\Exception;
 
 /**
  * LogException
  */
-class LogException extends RunTimeException
+class LogException extends Exception
 {
 
     public static function forConfigExists(string $key)
