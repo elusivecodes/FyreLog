@@ -39,9 +39,9 @@ Log::clear();
 
 **Get Config**
 
-Set a logger config.
+Set a [*Logger*](#loggers) config.
 
-- `$key` is a string representing the logger key.
+- `$key` is a string representing the [*Logger*](#loggers) key.
 
 ```php
 $config = Log::getConfig($key);
@@ -55,9 +55,9 @@ $config = Log::getConfig();
 
 **Set Config**
 
-Set the logger config.
+Set the [*Logger*](#loggers) config.
 
-- `$key` is a string representing the logger key.
+- `$key` is a string representing the [*Logger*](#loggers) key.
 - `$options` is an array containing configuration options.
 
 ```php
@@ -72,9 +72,9 @@ Log::setConfig($config);
 
 **Unload**
 
-Unload a logger.
+Unload a [*Logger*](#loggers).
 
-- `$key` is a string representing the logger key, and will default to *"default"*.
+- `$key` is a string representing the [*Logger*](#loggers) key, and will default to *"default"*.
 
 ```php
 Log::unload($key);
@@ -82,9 +82,9 @@ Log::unload($key);
 
 **Load**
 
-Load a logger.
+Load a [*Logger*](#loggers).
 
-- `$config` is an array containing the configuration for the logger.
+- `$config` is an array containing configuration options.
 
 ```php
 $logger = Log::load($config);
@@ -92,9 +92,9 @@ $logger = Log::load($config);
 
 **Set Config**
 
-Set the logger config.
+Set the [*Logger*](#loggers) config.
 
-- `$key` is a string representing the logger key.
+- `$key` is a string representing the [*Logger*](#loggers) key.
 - `$config` is an array containing configuration data.
 
 ```php
@@ -103,9 +103,9 @@ Log::setConfig($key, $config);
 
 **Use**
 
-Load a shared logger instance.
+Load a shared [*Logger*](#loggers) instance.
 
-- `$key` is a string representing the logger key, and will default to *"default"*.
+- `$key` is a string representing the [*Logger*](#loggers) key, and will default to *"default"*.
 
 ```php
 $logger = Log::use($key);
