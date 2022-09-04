@@ -158,7 +158,7 @@ abstract class Log
      * @param array $data Additional data to interpolate.
      * @throws LogException if the handler is invalid.
      */
-    protected static function log(string $type = 'debug', string $message, array $data = []): void
+    protected static function log(string $type, string $message, array $data = []): void
     {
         $level = static::$levels[$type];
 
