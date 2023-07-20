@@ -3,8 +3,7 @@ declare(strict_types=1);
 
 namespace Fyre\Log;
 
-use function
-    array_replace_recursive;
+use function array_replace;
 
 /**
  * Logger
@@ -25,7 +24,7 @@ abstract class Logger
      */
     public function __construct(array $options = [])
     {
-        $this->config = array_replace_recursive(self::$defaults, static::$defaults, $options);
+        $this->config = array_replace(self::$defaults, static::$defaults, $options);
     }
 
     /**
@@ -36,6 +35,15 @@ abstract class Logger
     public function canHandle(int $level): bool
     {
         return $level <= $this->config['threshold'];
+    }
+
+    /**
+     * Get the config.
+     * @return array The config.
+     */
+    public function getConfig(): array
+    {
+        return $this->config;
     }
 
     /**

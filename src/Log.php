@@ -3,25 +3,25 @@ declare(strict_types=1);
 
 namespace Fyre\Log;
 
-use
-    BadMethodCallException,
-    Fyre\Log\Exceptions\LogException,
-    MessageFormatter;
+use BadMethodCallException;
+use Fyre\Log\Exceptions\LogException;
+use MessageFormatter;
 
-use function
-    array_key_exists,
-    call_user_func_array,
-    class_exists,
-    debug_backtrace,
-    is_array,
-    print_r,
-    strpos;
+use function array_key_exists;
+use function call_user_func_array;
+use function class_exists;
+use function debug_backtrace;
+use function is_array;
+use function print_r;
+use function strpos;
 
 /**
  * Log
  */
 abstract class Log
 {
+
+    public const DEFAULT = 'default';
 
     protected static array $levels =[ 
         'emergency' => 1,
@@ -63,6 +63,57 @@ abstract class Log
     }
 
     /**
+     * Get the handler config.
+     * @param string $key The config key.
+     * @return array|null
+     */
+    public static function getConfig(string $key = self::DEFAULT): array|null
+    {
+        return static::$config[$key] ?? null;
+    }
+
+    /**
+     * Get the key for an logger instance.
+     * @param Logger $logger The logger.
+     * @return string|null The logger key.
+     */
+    public static function getKey(Logger $logger): string|null
+    {
+        return array_search($logger, static::$instances, true) ?: null;
+    }
+
+    /**
+     * Determine if a config exists.
+     * @param string $key The config key.
+     * @return bool TRUE if the config exists, otherwise FALSE.
+     */
+    public static function hasConfig(string $key = self::DEFAULT): bool
+    {
+        return array_key_exists($key, static::$config);
+    }
+
+    /**
+     * Initialize a set of configuration options.
+     * @param array $config The configuration options.
+     */
+    public static function initConfig(array $config): void
+    {
+        foreach ($config AS $key => $options) {
+            static::setConfig($key, $options);
+        }
+    }
+
+    /**
+     * Determine if a handler is loaded.
+     * @param string $key The config key.
+     * @return bool TRUE if the handler is loaded, otherwise FALSE.
+     */
+    public static function isLoaded(string $key = self::DEFAULT): bool
+    {
+        return array_key_exists($key, static::$instances);
+    }
+
+    /**
      * Load a handler.
      * @param array $options Options for the handler.
      * @return Logger The handler.
@@ -89,18 +140,6 @@ abstract class Log
      */
     public static function setConfig(string|array $key, array|null $options = null): void
     {
-        if (is_array($key)) {
-            foreach ($key AS $k => $value) {
-                static::setConfig($k, $value);
-            }
-
-            return;
-        }
-
-        if (!is_array($options)) {
-            throw LogException::forInvalidConfig($key);
-        }
-
         if (array_key_exists($key, static::$config)) {
             throw LogException::forConfigExists($key);
         }
@@ -111,11 +150,18 @@ abstract class Log
     /**
      * Unload a handler.
      * @param string $key The config key.
+     * @return bool TRUE if the handler was removed, otherwise FALSE.
      */
-    public static function unload(string $key = 'default'): void
+    public static function unload(string $key = self::DEFAULT): bool
     {
+        if (!array_key_exists($key, static::$config)) {
+            return false;
+        }
+
         unset(static::$instances[$key]);
         unset(static::$config[$key]);
+
+        return true;
     }
 
     /**
@@ -123,7 +169,7 @@ abstract class Log
      * @param string $key The config key.
      * @return Logger The handler.
      */
-    public static function use(string $key = 'default'): Logger
+    public static function use(string $key = self::DEFAULT): Logger
     {
         return static::$instances[$key] ??= static::load(static::$config[$key] ?? []);
     }

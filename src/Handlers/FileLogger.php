@@ -3,15 +3,13 @@ declare(strict_types=1);
 
 namespace Fyre\Log\Handlers;
 
-use
-    Fyre\FileSystem\File,
-    Fyre\Log\Logger,
-    Fyre\Utility\Path,
-    MessageFormatter;
+use Fyre\FileSystem\File;
+use Fyre\Log\Logger;
+use Fyre\Utility\Path;
+use MessageFormatter;
 
-use function
-    date,
-    time;
+use function date;
+use function time;
 
 /**
  * FileLogger
@@ -21,6 +19,7 @@ class FileLogger extends Logger
 
     protected static array $defaults = [
         'path' => '/var/log/',
+        'extension' => 'log',
         'maxSize' => 1048576
     ];
 
@@ -44,8 +43,7 @@ class FileLogger extends Logger
      */
     public function handle(string $type, string $message): void
     {
-        $file = $type.'.log';
-        $filePath = Path::join($this->path, $type.'.log');
+        $filePath = Path::join($this->path, $type.'.'.$this->config['extension']);
 
         $file = new File($filePath, true);
         $file
@@ -53,7 +51,7 @@ class FileLogger extends Logger
             ->lock();
 
         if ($file->size() > $this->config['maxSize']) {
-            $oldPath = Path::join($this->path, $type.'.'.time().'.log');
+            $oldPath = Path::join($this->path, $type.'.'.time().'.'.$this->config['extension']);
 
             $file
                 ->copy($oldPath)

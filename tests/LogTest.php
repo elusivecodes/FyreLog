@@ -3,159 +3,203 @@ declare(strict_types=1);
 
 namespace Tests;
 
-use
-    BadMethodCallException,
-    Fyre\Log\Log,
-    Fyre\Log\Exceptions\LogException,
-    Fyre\Log\Handlers\FileLogger,
-    PHPUnit\Framework\TestCase;
-
-use function
-    file_get_contents,
-    rmdir,
-    unlink;
+use BadMethodCallException;
+use Fyre\Log\Log;
+use Fyre\Log\Exceptions\LogException;
+use Fyre\Log\Handlers\FileLogger;
+use PHPUnit\Framework\TestCase;
 
 final class LogTest extends TestCase
 {
 
-    protected array $levels = [
-        'emergency' => 1,
-        'alert' => 2,
-        'critical' => 3,
-        'error' => 4,
-        'warning' => 5,
-        'notice' => 6,
-        'info' => 7,
-        'debug' => 8
-    ];
-
-    public function testLog(): void
+    public function testGetConfig(): void
     {
-        foreach ($this->levels AS $type => $threshold) {
-            Log::$type('test');
-
-            $this->assertMatchesRegularExpression(
-                '/\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2} - test/',
-                file_get_contents('log/'.$type.'.log')
-            );
-        }
-    }
-
-    public function testData(): void
-    {
-        foreach ($this->levels AS $type => $threshold) {
-            Log::$type('{0}', ['test']);
-
-            $this->assertMatchesRegularExpression(
-                '/\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2} - test/',
-                file_get_contents('log/'.$type.'.log')
-            );
-        }
-    }
-
-    public function testSkipped(): void
-    {
-        foreach ($this->levels AS $type => $threshold) {
-            Log::clear();
-            Log::setConfig('file', [
+        $this->assertSame(
+            [
                 'className' => FileLogger::class,
-                'threshold' => $threshold - 1,
+                'threshold' => 8,
                 'path' => 'log'
-            ]);
-            Log::$type('test');
-
-            $this->assertFileDoesNotExist('log/'.$type.'.log');
-        }
-    }
-
-    public function testInterpolatePost(): void
-    {
-        foreach ($this->levels AS $type => $threshold) {
-            Log::$type('{post_vars}');
-
-            $this->assertMatchesRegularExpression(
-                '/\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2} - \$_POST: Array/',
-                file_get_contents('log/'.$type.'.log')
-            );
-        }
-    }
-
-    public function testInterpolateGet(): void
-    {
-        foreach ($this->levels AS $type => $threshold) {
-            Log::$type('{get_vars}');
-
-            $this->assertMatchesRegularExpression(
-                '/\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2} - \$_GET: Array/',
-                file_get_contents('log/'.$type.'.log')
-            );
-        }
-    }
-
-    public function testInterpolateServer(): void
-    {
-        foreach ($this->levels AS $type => $threshold) {
-            Log::$type('{server_vars}');
-
-            $this->assertMatchesRegularExpression(
-                '/\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2} - \$_SERVER: Array/',
-                file_get_contents('log/'.$type.'.log')
-            );
-        }
-    }
-
-    public function testAppends(): void
-    {
-        Log::debug('test1');
-        Log::debug('test2');
-
-        $this->assertMatchesRegularExpression(
-            '/\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2} - test1/',
-            file_get_contents('log/debug.log')
-        );
-
-        $this->assertMatchesRegularExpression(
-            '/\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2} - test2/',
-            file_get_contents('log/debug.log')
+            ],
+            Log::getConfig()
         );
     }
 
-    public function testInvalidLevel(): void
+    public function testGetConfigKey(): void
     {
-        $this->expectException(BadMethodCallException::class);
-
-        Log::invalid('test');
+        $this->assertSame(
+            [
+                'className' => FileLogger::class,
+                'threshold' => 5,
+                'path' => 'error'
+            ],
+            Log::getConfig('error')
+        );
     }
 
-    public function testInvalidHandler(): void
+    public function testGetKey(): void
     {
-        $this->expectException(LogException::class);
+        $handler = Log::use();
 
-        Log::clear();
-        Log::setConfig('invalid', [
-            'className' => 'Invalid'
-        ]);
-
-        Log::debug('test');
+        $this->assertSame(
+            'default',
+            Log::getKey($handler)
+        );
     }
 
-    protected function setup(): void
+    public function testGetKeyInvalid(): void
     {
-        Log::clear();
-        Log::setConfig('file', [
+        $handler = Log::load([
             'className' => FileLogger::class,
             'threshold' => 8,
             'path' => 'log'
         ]);
+
+        $this->assertNull(
+            Log::getKey($handler)
+        );
     }
 
-    protected function tearDown(): void
+    public function testIsLoaded(): void
     {
-        foreach ($this->levels AS $type => $level) {
-            @unlink('log/'.$type.'.log');
-        }
+        Log::use();
+        
+        $this->assertTrue(
+            Log::isLoaded()
+        );
+    }
 
-        @rmdir('log');
+    public function testIsLoadedKey(): void
+    {
+        Log::use('error');
+        
+        $this->assertTrue(
+            Log::isLoaded('error')
+        );
+    }
+
+    public function testIsLoadedInvalid(): void
+    {
+        $this->assertFalse(
+            Log::isLoaded('test')
+        );
+    }
+
+    public function testLoad(): void
+    {
+        $this->assertInstanceOf(
+            FileLogger::class,
+            Log::load([
+                'className' => FileLogger::class
+            ])
+        );
+    }
+
+    public function testLoadInvalidHandler(): void
+    {
+        $this->expectException(LogException::class);
+
+        Log::load([
+            'className' => 'Invalid'
+        ]);
+    }
+
+    public function testSetConfig(): void
+    {
+        Log::setConfig('test', [
+            'className' => FileLogger::class,
+            'threshold' => 1,
+            'path' => 'log'
+        ]);
+
+        $this->assertSame(
+            [
+                'className' => FileLogger::class,
+                'threshold' => 1,
+                'path' => 'log'
+            ],
+            Log::getConfig('test')
+        );
+    }
+
+    public function testSetConfigExists(): void
+    {
+        $this->expectException(LogException::class);
+
+        Log::setConfig('default', [
+            'className' => FileLogger::class,
+            'threshold' => 1,
+            'path' => 'log'
+        ]);
+    }
+
+    public function testUnload(): void
+    {
+        Log::use();
+
+        $this->assertTrue(
+            Log::unload()
+        );
+
+        $this->assertFalse(
+            Log::isLoaded()
+        );
+        $this->assertFalse(
+            Log::hasConfig()
+        );
+    }
+
+    public function testUnloadKey(): void
+    {
+        Log::use('error');
+
+        $this->assertTrue(
+            Log::unload('error')
+        );
+
+        $this->assertFalse(
+            Log::isLoaded('error')
+        );
+        $this->assertFalse(
+            Log::hasConfig('error')
+        );
+    }
+
+    public function testUnloadInvalid(): void
+    {
+        $this->assertFalse(
+            Log::unload('test')
+        );
+    }
+
+    public function testUse(): void
+    {
+        $handler1 = Log::use();
+        $handler2 = Log::use();
+
+        $this->assertSame($handler1, $handler2);
+
+        $this->assertInstanceOf(
+            FileLogger::class,
+            $handler1
+        );
+    }
+
+    protected function setUp(): void
+    {
+        Log::clear();
+
+        Log::initConfig([
+            'default' => [
+                'className' => FileLogger::class,
+                'threshold' => 8,
+                'path' => 'log'
+            ],
+            'error' => [
+                'className' => FileLogger::class,
+                'threshold' => 5,
+                'path' => 'error'
+            ]
+        ]);
     }
 
 }

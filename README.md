@@ -1,6 +1,6 @@
 # FyreLog
 
-**FyreLog** is a free, logging library for *PHP*.
+**FyreLog** is a free, open-source logging library for *PHP*.
 
 
 ## Table Of Contents
@@ -39,45 +39,52 @@ Log::clear();
 
 **Get Config**
 
-Set a [*Logger*](#loggers) config.
+Get a [*Logger*](#loggers) config.
 
-- `$key` is a string representing the [*Logger*](#loggers) key.
+- `$key` is a string representing the [*Logger*](#loggers) key, and will default to `Log::DEFAULT`.
 
 ```php
 $config = Log::getConfig($key);
 ```
 
-Alternatively, if the `$key` argument is omitted an array containing all configurations will be returned.
+**Get Key**
+
+Get the key for a [*Logger*](#loggers) instance.
+
+- `$logger` is a [*Logger*](#loggers).
 
 ```php
-$config = Log::getConfig();
+$key = Log::getKey($logger);
 ```
 
-**Set Config**
+**Has Config**
 
-Set the [*Logger*](#loggers) config.
+Check if a [*Logger*](#loggers) config exists.
 
-- `$key` is a string representing the [*Logger*](#loggers) key.
-- `$options` is an array containing configuration options.
+- `$key` is a string representing the [*Logger*](#loggers) key, and will default to `Log::DEFAULT`.
 
 ```php
-Log::setConfig($key, $options);
+$hasConfig = Log::hasConfig($key);
 ```
 
-Alternatively, a single array can be provided containing key/value of configuration options.
+**Init Config**
+
+Initialize a set of config options.
+
+- `$config` is an array containing key/value pairs of config options.
 
 ```php
-Log::setConfig($config);
+Log::initConfig($config);
 ```
 
-**Unload**
+**Is Loaded**
 
-Unload a [*Logger*](#loggers).
+Check if a [*Logger*](#loggers) instance is loaded.
 
-- `$key` is a string representing the [*Logger*](#loggers) key, and will default to *"default"*.
+- `$key` is a string representing the [*Logger*](#loggers) key, and will default to `Log::DEFAULT`.
 
 ```php
-Log::unload($key);
+$isLoaded = Log::isLoaded($key);
 ```
 
 **Load**
@@ -95,17 +102,38 @@ $logger = Log::load($config);
 Set the [*Logger*](#loggers) config.
 
 - `$key` is a string representing the [*Logger*](#loggers) key.
+- `$options` is an array containing configuration options.
+
+```php
+Log::setConfig($key, $options);
+```
+
+**Set Config**
+
+Set the [*Logger*](#loggers) config.
+
+- `$key` is a string representing the [*Logger*](#loggers) key.
 - `$config` is an array containing configuration data.
 
 ```php
 Log::setConfig($key, $config);
 ```
 
+**Unload**
+
+Unload a [*Logger*](#loggers).
+
+- `$key` is a string representing the [*Logger*](#loggers) key, and will default to `Log::DEFAULT`.
+
+```php
+Log::unload($key);
+```
+
 **Use**
 
 Load a shared [*Logger*](#loggers) instance.
 
-- `$key` is a string representing the [*Logger*](#loggers) key, and will default to *"default"*.
+- `$key` is a string representing the [*Logger*](#loggers) key, and will default to `Log::DEFAULT`.
 
 ```php
 $logger = Log::use($key);
@@ -152,6 +180,7 @@ The File logger can be loaded using custom configuration.
     - `dateFormat` is a string representing the date format, and will default to "*Y-m-d H:i:s*".
     - `threshold` is a number representing the log threshold, and will default to *0*.
     - `path` is a string representing the directory path, and will default to "*/var/log*".
+    - `extension` is a string representing the file extension, and will default to "*log*".
     - `maxSize` is a number representing the maximum file size before log rotation, and will default to *1048576*.
 
 ```php
