@@ -215,8 +215,8 @@ Log::debug($message, $data);       // 8
 There are default placeholders that can also be used in log messages:
 
 - *{post_vars}* will be replaced with the `$_POST` data.
-- *{get_vars}* will be replaced with the `$_GET_` data.
-- *{server_vars}* will be replaced with the `$_SERVER_` data.
+- *{get_vars}* will be replaced with the `$_GET` data.
+- *{server_vars}* will be replaced with the `$_SERVER` data.
 - *{session_vars}* will be replaced with the `$_SESSION` data.
 - *{backtrace}* will be replaced with the backtrace.
 
