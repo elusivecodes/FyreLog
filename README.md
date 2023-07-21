@@ -108,17 +108,6 @@ Set the [*Logger*](#loggers) config.
 Log::setConfig($key, $options);
 ```
 
-**Set Config**
-
-Set the [*Logger*](#loggers) config.
-
-- `$key` is a string representing the [*Logger*](#loggers) key.
-- `$config` is an array containing configuration data.
-
-```php
-Log::setConfig($key, $config);
-```
-
 **Unload**
 
 Unload a [*Logger*](#loggers).

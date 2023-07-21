@@ -134,11 +134,11 @@ abstract class Log
 
     /**
      * Set handler config.
-     * @param string|array $key The config key.
-     * @param array|null $options The config options.
+     * @param string $key The config key.
+     * @param array $options The config options.
      * @throws LogException if the config is invalid.
      */
-    public static function setConfig(string|array $key, array|null $options = null): void
+    public static function setConfig(string $key, array $options): void
     {
         if (array_key_exists($key, static::$config)) {
             throw LogException::forConfigExists($key);
