@@ -141,7 +141,7 @@ final class FileTest extends TestCase
     {
         Log::clear();
 
-        Log::initConfig([
+        Log::setConfig([
             'default' => [
                 'className' => FileLogger::class,
                 'threshold' => 8,

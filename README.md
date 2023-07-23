@@ -41,10 +41,16 @@ Log::clear();
 
 Get a [*Logger*](#loggers) config.
 
-- `$key` is a string representing the [*Logger*](#loggers) key, and will default to `Log::DEFAULT`.
+- `$key` is a string representing the [*Logger*](#loggers) key.
 
 ```php
 $config = Log::getConfig($key);
+```
+
+Alternatively, if the `$key` argument is omitted an array containing all configurations will be returned.
+
+```php
+$config = Log::getConfig();
 ```
 
 **Get Key**
@@ -65,16 +71,6 @@ Check if a [*Logger*](#loggers) config exists.
 
 ```php
 $hasConfig = Log::hasConfig($key);
-```
-
-**Init Config**
-
-Initialize a set of config options.
-
-- `$config` is an array containing key/value pairs of config options.
-
-```php
-Log::initConfig($config);
 ```
 
 **Is Loaded**
@@ -106,6 +102,12 @@ Set the [*Logger*](#loggers) config.
 
 ```php
 Log::setConfig($key, $options);
+```
+
+Alternatively, a single array can be provided containing key/value of configuration options.
+
+```php
+Log::setConfig($config);
 ```
 
 **Unload**

@@ -16,9 +16,16 @@ final class LogTest extends TestCase
     {
         $this->assertSame(
             [
-                'className' => FileLogger::class,
-                'threshold' => 8,
-                'path' => 'log'
+                'default' => [
+                    'className' => FileLogger::class,
+                    'threshold' => 8,
+                    'path' => 'log'
+                ],
+                'error' => [
+                    'className' => FileLogger::class,
+                    'threshold' => 5,
+                    'path' => 'error'
+                ]
             ],
             Log::getConfig()
         );
@@ -188,7 +195,7 @@ final class LogTest extends TestCase
     {
         Log::clear();
 
-        Log::initConfig([
+        Log::setConfig([
             'default' => [
                 'className' => FileLogger::class,
                 'threshold' => 8,
