@@ -117,7 +117,7 @@ Unload a [*Logger*](#loggers).
 - `$key` is a string representing the [*Logger*](#loggers) key, and will default to `Log::DEFAULT`.
 
 ```php
-Log::unload($key);
+$unloaded = Log::unload($key);
 ```
 
 **Use**
