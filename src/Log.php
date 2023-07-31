@@ -42,7 +42,7 @@ abstract class Log
      * Log a message.
      * @param string $type The log type.
      * @param array $arguments Arguments to pass to the log method.
-     * @throws BadMethodCallException if the log type is invalid.
+     * @throws BadMethodCallException if the log type is not valid.
      */
     public static function __callStatic(string $type, array $arguments)
     {
@@ -110,7 +110,7 @@ abstract class Log
      * Load a handler.
      * @param array $options Options for the handler.
      * @return Logger The handler.
-     * @throws LogException if the handler is invalid.
+     * @throws LogException if the handler is not valid.
      */
     public static function load(array $options = []): Logger
     {
@@ -129,7 +129,7 @@ abstract class Log
      * Set handler config.
      * @param string|array $key The config key.
      * @param array|null $options The config options.
-     * @throws LogException if the config is invalid.
+     * @throws LogException if the config is not valid.
      */
     public static function setConfig(string|array $key, array|null $options = null): void
     {
@@ -207,7 +207,6 @@ abstract class Log
      * @param string $type The log type.
      * @param string $message The log message.
      * @param array $data Additional data to interpolate.
-     * @throws LogException if the handler is invalid.
      */
     protected static function log(string $type, string $message, array $data = []): void
     {
