@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace Tests;
 
-use BadMethodCallException;
 use Fyre\Log\Log;
 use Fyre\Log\Exceptions\LogException;
 use Fyre\Log\Handlers\FileLogger;
