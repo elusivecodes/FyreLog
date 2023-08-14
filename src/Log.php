@@ -44,7 +44,7 @@ abstract class Log
      * @param array $arguments Arguments to pass to the log method.
      * @throws BadMethodCallException if the log type is not valid.
      */
-    public static function __callStatic(string $type, array $arguments)
+    public static function __callStatic(string $type, array $arguments): void
     {
         if (!array_key_exists($type, static::$levels)) {
             throw new BadMethodCallException();
