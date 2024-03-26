@@ -20,7 +20,8 @@ class FileLogger extends Logger
     protected static array $defaults = [
         'path' => '/var/log/',
         'extension' => 'log',
-        'maxSize' => 1048576
+        'maxSize' => 1048576,
+        'mask' => null
     ];
 
     protected string $path;
@@ -46,6 +47,11 @@ class FileLogger extends Logger
         $filePath = Path::join($this->path, $type.'.'.$this->config['extension']);
 
         $file = new File($filePath, true);
+
+        if ($this->config['mask']) {
+            $file->chmod($this->config['mask']);
+        }
+
         $file
             ->open('a')
             ->lock();
