@@ -9,7 +9,12 @@ use Fyre\Log\Exceptions\LogException;
 use Fyre\Log\Handlers\FileLogger;
 use PHPUnit\Framework\TestCase;
 
+use const JSON_THROW_ON_ERROR;
+use const JSON_UNESCAPED_UNICODE;
+
+use function date;
 use function file_get_contents;
+use function json_encode;
 use function rmdir;
 use function unlink;
 
@@ -71,8 +76,8 @@ final class FileTest extends TestCase
         foreach ($this->levels AS $type => $threshold) {
             Log::$type('{post_vars}');
 
-            $this->assertMatchesRegularExpression(
-                '/\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2} - \$_POST: Array/',
+            $this->assertEquals(
+                date('Y-m-d H:i:s').' - '.json_encode($_POST, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE)."\r\n",
                 file_get_contents('log/'.$type.'.log')
             );
         }
@@ -83,8 +88,8 @@ final class FileTest extends TestCase
         foreach ($this->levels AS $type => $threshold) {
             Log::$type('{get_vars}');
 
-            $this->assertMatchesRegularExpression(
-                '/\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2} - \$_GET: Array/',
+            $this->assertEquals(
+                date('Y-m-d H:i:s').' - '.json_encode($_GET, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE)."\r\n",
                 file_get_contents('log/'.$type.'.log')
             );
         }
@@ -95,8 +100,8 @@ final class FileTest extends TestCase
         foreach ($this->levels AS $type => $threshold) {
             Log::$type('{server_vars}');
 
-            $this->assertMatchesRegularExpression(
-                '/\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2} - \$_SERVER: Array/',
+            $this->assertEquals(
+                date('Y-m-d H:i:s').' - '.json_encode($_SERVER, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE)."\r\n",
                 file_get_contents('log/'.$type.'.log')
             );
         }

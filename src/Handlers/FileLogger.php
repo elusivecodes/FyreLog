@@ -6,7 +6,6 @@ namespace Fyre\Log\Handlers;
 use Fyre\FileSystem\File;
 use Fyre\Log\Logger;
 use Fyre\Utility\Path;
-use MessageFormatter;
 
 use function date;
 use function time;
@@ -66,11 +65,7 @@ class FileLogger extends Logger
                 ->lock();
         }
 
-        $message = MessageFormatter::formatMessage('en', '{0} - {2}'."\r\n", [
-            date($this->config['dateFormat']),
-            $type,
-            $message
-        ]);
+        $message = date($this->config['dateFormat']).' - '.$message."\r\n";
 
         $file
             ->write($message)

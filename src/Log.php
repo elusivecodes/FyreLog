@@ -5,14 +5,21 @@ namespace Fyre\Log;
 
 use BadMethodCallException;
 use Fyre\Log\Exceptions\LogException;
-use MessageFormatter;
+
+use const JSON_THROW_ON_ERROR;
+use const JSON_UNESCAPED_UNICODE;
 
 use function array_key_exists;
+use function array_keys;
+use function array_unique;
 use function call_user_func_array;
 use function class_exists;
 use function debug_backtrace;
 use function is_array;
-use function print_r;
+use function is_scalar;
+use function json_encode;
+use function preg_match_all;
+use function str_replace;
 use function strpos;
 
 /**
@@ -191,15 +198,50 @@ abstract class Log
             return $message;
         }
 
-        $data['post_vars'] = '$_POST: '.print_r($_POST, true);
-        $data['get_vars'] = '$_GET: '.print_r($_GET, true);
-        $data['server_vars'] = '$_SERVER: '.print_r($_SERVER, true);
-        $data['session_vars'] = '$_SESSION: '.print_r($_SESSION ?? [], true);
+        preg_match_all('/(?<!\\\\){([\w-]+)}/i', $message, $matches);
 
-        $trace = debug_backtrace(0);
-        $data['backtrace'] = 'Backtrace: '.print_r($trace, true);
+        if ($matches === []) {
+            return $message;
+        }
 
-        return MessageFormatter::formatMessage('en', $message, $data);
+        $keys = array_unique($matches[1]);
+        $replacements = [];
+        $jsonFlags = JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE;
+
+        foreach ($keys AS $key) {
+            $replaceKey = '{'.$key.'}';
+
+            if (array_key_exists($key, $data)) {
+                if (is_scalar($data[$key])) {
+                    $replacements[$replaceKey] = (string) $data[$key];
+                } else {
+                    $replacements[$replaceKey] = json_encode($data[$key], $jsonFlags);
+                }
+            } else {
+                switch ($key) {
+                    case 'backtrace':
+                        $trace = debug_backtrace(0);
+                        $replacements[$replaceKey] = json_encode($trace, $jsonFlags);
+                        break;
+                    case 'get_vars':
+                        $replacements[$replaceKey] = json_encode($_GET, $jsonFlags);
+                        break;
+                    case 'post_vars':
+                        $replacements[$replaceKey] = json_encode($_POST, $jsonFlags);
+                        break;
+                    case 'server_vars':
+                        $replacements[$replaceKey] = json_encode($_SERVER, $jsonFlags);
+                        break;
+                    case 'session_vars':
+                        $replacements[$replaceKey] = json_encode($_SESSION ?? [], $jsonFlags);
+                        break;
+                }
+            }
+        }
+
+        $replacementKeys = array_keys($replacements);
+
+        return str_replace($replacementKeys, $replacements, $message);
     }
 
     /**
