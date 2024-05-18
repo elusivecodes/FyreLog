@@ -18,6 +18,7 @@ class FileLogger extends Logger
 
     protected static array $defaults = [
         'path' => '/var/log/',
+        'suffix' => null,
         'extension' => 'log',
         'maxSize' => 1048576,
         'mask' => null
@@ -43,7 +44,7 @@ class FileLogger extends Logger
      */
     public function handle(string $type, string $message): void
     {
-        $filePath = Path::join($this->path, $type.'.'.$this->config['extension']);
+        $filePath = Path::join($this->path, $type.($this->config['suffix'] ?? '').'.'.$this->config['extension']);
 
         $file = new File($filePath, true);
 
