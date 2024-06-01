@@ -218,23 +218,17 @@ abstract class Log
                     $replacements[$replaceKey] = json_encode($data[$key], $jsonFlags);
                 }
             } else {
-                switch ($key) {
-                    case 'backtrace':
-                        $trace = debug_backtrace(0);
-                        $replacements[$replaceKey] = json_encode($trace, $jsonFlags);
-                        break;
-                    case 'get_vars':
-                        $replacements[$replaceKey] = json_encode($_GET, $jsonFlags);
-                        break;
-                    case 'post_vars':
-                        $replacements[$replaceKey] = json_encode($_POST, $jsonFlags);
-                        break;
-                    case 'server_vars':
-                        $replacements[$replaceKey] = json_encode($_SERVER, $jsonFlags);
-                        break;
-                    case 'session_vars':
-                        $replacements[$replaceKey] = json_encode($_SESSION ?? [], $jsonFlags);
-                        break;
+                $data = match ($key) {
+                    'backtrace' => debug_backtrace(0),
+                    'get_vars' => $_GET,
+                    'post_vars' => $_POST,
+                    'server_vars' => $_SERVER,
+                    'session_vars' => $_SESSION,
+                    default => null
+                };
+
+                if ($data !== null) {
+                    $replacements[$replaceKey] = json_encode($data, $jsonFlags);
                 }
             }
         }
