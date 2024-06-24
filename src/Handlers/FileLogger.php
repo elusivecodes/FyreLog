@@ -15,7 +15,6 @@ use function time;
  */
 class FileLogger extends Logger
 {
-
     protected static array $defaults = [
         'path' => '/var/log/',
         'suffix' => null,
@@ -72,5 +71,4 @@ class FileLogger extends Logger
             ->write($message)
             ->close();
     }
-
 }

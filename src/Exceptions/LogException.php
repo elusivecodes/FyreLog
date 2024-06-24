@@ -10,7 +10,6 @@ use RuntimeException;
  */
 class LogException extends RuntimeException
 {
-
     public static function forConfigExists(string $key): static
     {
         return new static('Cache handler config already exists: '.$key);
@@ -25,5 +24,4 @@ class LogException extends RuntimeException
     {
         return new static('Cache handler invalid config: '.$key);
     }
-
 }

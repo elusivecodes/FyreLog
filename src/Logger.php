@@ -10,13 +10,12 @@ use function array_replace;
  */
 abstract class Logger
 {
+    protected array $config;
 
     protected static array $defaults = [
         'dateFormat' => 'Y-m-d H:i:s',
         'threshold' => 0
     ];
-
-    protected array $config;
 
     /**
      * New Logger constructor.
@@ -52,5 +51,4 @@ abstract class Logger
      * @param string $message The log message.
      */
     abstract public function handle(string $type, string $message): void;
-
 }

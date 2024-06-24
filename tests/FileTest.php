@@ -4,23 +4,23 @@ declare(strict_types=1);
 namespace Tests;
 
 use BadMethodCallException;
-use Fyre\Log\Log;
 use Fyre\Log\Exceptions\LogException;
 use Fyre\Log\Handlers\FileLogger;
+use Fyre\Log\Log;
 use PHPUnit\Framework\TestCase;
-
-use const JSON_THROW_ON_ERROR;
-use const JSON_UNESCAPED_UNICODE;
 
 use function date;
 use function file_get_contents;
+
 use function json_encode;
 use function rmdir;
 use function unlink;
 
+use const JSON_THROW_ON_ERROR;
+use const JSON_UNESCAPED_UNICODE;
+
 final class FileTest extends TestCase
 {
-
     protected array $levels = [
         'emergency' => 1,
         'alert' => 2,
@@ -32,79 +32,26 @@ final class FileTest extends TestCase
         'debug' => 8
     ];
 
-    public function testLog(): void
+    protected function setup(): void
     {
-        foreach ($this->levels AS $type => $threshold) {
-            Log::$type('test');
+        Log::clear();
 
-            $this->assertMatchesRegularExpression(
-                '/\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2} - test/',
-                file_get_contents('log/'.$type.'.log')
-            );
-        }
-    }
-
-    public function testData(): void
-    {
-        foreach ($this->levels AS $type => $threshold) {
-            Log::$type('{0}', ['test']);
-
-            $this->assertMatchesRegularExpression(
-                '/\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2} - test/',
-                file_get_contents('log/'.$type.'.log')
-            );
-        }
-    }
-
-    public function testSkipped(): void
-    {
-        foreach ($this->levels AS $type => $threshold) {
-            Log::clear();
-            Log::setConfig('file', [
+        Log::setConfig([
+            'default' => [
                 'className' => FileLogger::class,
-                'threshold' => $threshold - 1,
+                'threshold' => 8,
                 'path' => 'log'
-            ]);
-            Log::$type('test');
-
-            $this->assertFileDoesNotExist('log/'.$type.'.log');
-        }
+            ]
+        ]);
     }
 
-    public function testInterpolatePost(): void
+    protected function tearDown(): void
     {
-        foreach ($this->levels AS $type => $threshold) {
-            Log::$type('{post_vars}');
-
-            $this->assertEquals(
-                date('Y-m-d H:i:s').' - '.json_encode($_POST, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE)."\r\n",
-                file_get_contents('log/'.$type.'.log')
-            );
+        foreach ($this->levels as $type => $level) {
+            @unlink('log/'.$type.'.log');
         }
-    }
 
-    public function testInterpolateGet(): void
-    {
-        foreach ($this->levels AS $type => $threshold) {
-            Log::$type('{get_vars}');
-
-            $this->assertEquals(
-                date('Y-m-d H:i:s').' - '.json_encode($_GET, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE)."\r\n",
-                file_get_contents('log/'.$type.'.log')
-            );
-        }
-    }
-
-    public function testInterpolateServer(): void
-    {
-        foreach ($this->levels AS $type => $threshold) {
-            Log::$type('{server_vars}');
-
-            $this->assertEquals(
-                date('Y-m-d H:i:s').' - '.json_encode($_SERVER, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE)."\r\n",
-                file_get_contents('log/'.$type.'.log')
-            );
-        }
+        @rmdir('log');
     }
 
     public function testAppends(): void
@@ -123,11 +70,52 @@ final class FileTest extends TestCase
         );
     }
 
-    public function testInvalidLevel(): void
+    public function testData(): void
     {
-        $this->expectException(BadMethodCallException::class);
+        foreach ($this->levels as $type => $threshold) {
+            Log::$type('{0}', ['test']);
 
-        Log::invalid('test');
+            $this->assertMatchesRegularExpression(
+                '/\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2} - test/',
+                file_get_contents('log/'.$type.'.log')
+            );
+        }
+    }
+
+    public function testInterpolateGet(): void
+    {
+        foreach ($this->levels as $type => $threshold) {
+            Log::$type('{get_vars}');
+
+            $this->assertEquals(
+                date('Y-m-d H:i:s').' - '.json_encode($_GET, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE)."\r\n",
+                file_get_contents('log/'.$type.'.log')
+            );
+        }
+    }
+
+    public function testInterpolatePost(): void
+    {
+        foreach ($this->levels as $type => $threshold) {
+            Log::$type('{post_vars}');
+
+            $this->assertEquals(
+                date('Y-m-d H:i:s').' - '.json_encode($_POST, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE)."\r\n",
+                file_get_contents('log/'.$type.'.log')
+            );
+        }
+    }
+
+    public function testInterpolateServer(): void
+    {
+        foreach ($this->levels as $type => $threshold) {
+            Log::$type('{server_vars}');
+
+            $this->assertEquals(
+                date('Y-m-d H:i:s').' - '.json_encode($_SERVER, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE)."\r\n",
+                file_get_contents('log/'.$type.'.log')
+            );
+        }
     }
 
     public function testInvalidHandler(): void
@@ -142,26 +130,37 @@ final class FileTest extends TestCase
         Log::debug('test');
     }
 
-    protected function setup(): void
+    public function testInvalidLevel(): void
     {
-        Log::clear();
+        $this->expectException(BadMethodCallException::class);
 
-        Log::setConfig([
-            'default' => [
-                'className' => FileLogger::class,
-                'threshold' => 8,
-                'path' => 'log'
-            ]
-        ]);
+        Log::invalid('test');
     }
 
-    protected function tearDown(): void
+    public function testLog(): void
     {
-        foreach ($this->levels AS $type => $level) {
-            @unlink('log/'.$type.'.log');
+        foreach ($this->levels as $type => $threshold) {
+            Log::$type('test');
+
+            $this->assertMatchesRegularExpression(
+                '/\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2} - test/',
+                file_get_contents('log/'.$type.'.log')
+            );
         }
-
-        @rmdir('log');
     }
 
+    public function testSkipped(): void
+    {
+        foreach ($this->levels as $type => $threshold) {
+            Log::clear();
+            Log::setConfig('file', [
+                'className' => FileLogger::class,
+                'threshold' => $threshold - 1,
+                'path' => 'log'
+            ]);
+            Log::$type('test');
+
+            $this->assertFileDoesNotExist('log/'.$type.'.log');
+        }
+    }
 }

@@ -6,9 +6,6 @@ namespace Fyre\Log;
 use BadMethodCallException;
 use Fyre\Log\Exceptions\LogException;
 
-use const JSON_THROW_ON_ERROR;
-use const JSON_UNESCAPED_UNICODE;
-
 use function array_key_exists;
 use function array_keys;
 use function array_unique;
@@ -22,15 +19,19 @@ use function preg_match_all;
 use function str_replace;
 use function strpos;
 
+use const JSON_THROW_ON_ERROR;
+use const JSON_UNESCAPED_UNICODE;
+
 /**
  * Log
  */
 abstract class Log
 {
-
     public const DEFAULT = 'default';
 
-    protected static array $levels =[ 
+    protected static array $config = [];
+    protected static array $instances = [];
+    protected static array $levels = [
         'emergency' => 1,
         'alert' => 2,
         'critical' => 3,
@@ -40,10 +41,6 @@ abstract class Log
         'info' => 7,
         'debug' => 8
     ];
-
-    protected static array $config = [];
-
-    protected static array $instances = [];
 
     /**
      * Log a message.
@@ -138,10 +135,10 @@ abstract class Log
      * @param array|null $options The config options.
      * @throws LogException if the config is not valid.
      */
-    public static function setConfig(string|array $key, array|null $options = null): void
+    public static function setConfig(array|string $key, array|null $options = null): void
     {
         if (is_array($key)) {
-            foreach ($key AS $k => $v) {
+            foreach ($key as $k => $v) {
                 static::setConfig($k, $v);
             }
 
@@ -208,7 +205,7 @@ abstract class Log
         $replacements = [];
         $jsonFlags = JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE;
 
-        foreach ($keys AS $key) {
+        foreach ($keys as $key) {
             $replaceKey = '{'.$key.'}';
 
             if (array_key_exists($key, $data)) {
@@ -250,7 +247,7 @@ abstract class Log
 
         $message = static::interpolate($message, $data);
 
-        foreach (static::$config AS $key => $config) {
+        foreach (static::$config as $key => $config) {
             $instance = static::use($key);
 
             if (!$instance->canHandle($level)) {
@@ -260,5 +257,4 @@ abstract class Log
             call_user_func_array([$instance, 'handle'], [$type, $message]);
         }
     }
-
 }

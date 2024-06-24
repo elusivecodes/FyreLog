@@ -3,13 +3,30 @@ declare(strict_types=1);
 
 namespace Tests;
 
-use Fyre\Log\Log;
 use Fyre\Log\Exceptions\LogException;
 use Fyre\Log\Handlers\FileLogger;
+use Fyre\Log\Log;
 use PHPUnit\Framework\TestCase;
 
 final class LogTest extends TestCase
 {
+    protected function setUp(): void
+    {
+        Log::clear();
+
+        Log::setConfig([
+            'default' => [
+                'className' => FileLogger::class,
+                'threshold' => 8,
+                'path' => 'log'
+            ],
+            'error' => [
+                'className' => FileLogger::class,
+                'threshold' => 5,
+                'path' => 'error'
+            ]
+        ]);
+    }
 
     public function testGetConfig(): void
     {
@@ -68,18 +85,9 @@ final class LogTest extends TestCase
     public function testIsLoaded(): void
     {
         Log::use();
-        
+
         $this->assertTrue(
             Log::isLoaded()
-        );
-    }
-
-    public function testIsLoadedKey(): void
-    {
-        Log::use('error');
-        
-        $this->assertTrue(
-            Log::isLoaded('error')
         );
     }
 
@@ -87,6 +95,15 @@ final class LogTest extends TestCase
     {
         $this->assertFalse(
             Log::isLoaded('test')
+        );
+    }
+
+    public function testIsLoadedKey(): void
+    {
+        Log::use('error');
+
+        $this->assertTrue(
+            Log::isLoaded('error')
         );
     }
 
@@ -154,6 +171,13 @@ final class LogTest extends TestCase
         );
     }
 
+    public function testUnloadInvalid(): void
+    {
+        $this->assertFalse(
+            Log::unload('test')
+        );
+    }
+
     public function testUnloadKey(): void
     {
         Log::use('error');
@@ -170,13 +194,6 @@ final class LogTest extends TestCase
         );
     }
 
-    public function testUnloadInvalid(): void
-    {
-        $this->assertFalse(
-            Log::unload('test')
-        );
-    }
-
     public function testUse(): void
     {
         $handler1 = Log::use();
@@ -189,23 +206,4 @@ final class LogTest extends TestCase
             $handler1
         );
     }
-
-    protected function setUp(): void
-    {
-        Log::clear();
-
-        Log::setConfig([
-            'default' => [
-                'className' => FileLogger::class,
-                'threshold' => 8,
-                'path' => 'log'
-            ],
-            'error' => [
-                'className' => FileLogger::class,
-                'threshold' => 5,
-                'path' => 'error'
-            ]
-        ]);
-    }
-
 }
