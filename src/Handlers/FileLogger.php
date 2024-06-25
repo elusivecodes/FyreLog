@@ -20,13 +20,14 @@ class FileLogger extends Logger
         'suffix' => null,
         'extension' => 'log',
         'maxSize' => 1048576,
-        'mask' => null
+        'mask' => null,
     ];
 
     protected string $path;
 
     /**
      * New Logger constructor.
+     *
      * @param array $options Options for the handler.
      */
     public function __construct(array $options = [])
@@ -38,6 +39,7 @@ class FileLogger extends Logger
 
     /**
      * Handle a message log.
+     *
      * @param string $type The log type.
      * @param string $message The log message.
      */

@@ -30,7 +30,9 @@ abstract class Log
     public const DEFAULT = 'default';
 
     protected static array $config = [];
+
     protected static array $instances = [];
+
     protected static array $levels = [
         'emergency' => 1,
         'alert' => 2,
@@ -39,23 +41,8 @@ abstract class Log
         'warning' => 5,
         'notice' => 6,
         'info' => 7,
-        'debug' => 8
+        'debug' => 8,
     ];
-
-    /**
-     * Log a message.
-     * @param string $type The log type.
-     * @param array $arguments Arguments to pass to the log method.
-     * @throws BadMethodCallException if the log type is not valid.
-     */
-    public static function __callStatic(string $type, array $arguments): void
-    {
-        if (!array_key_exists($type, static::$levels)) {
-            throw new BadMethodCallException();
-        }
-
-        static::log($type, ...$arguments);
-    }
 
     /**
      * Clear all instances and configs.
@@ -68,8 +55,8 @@ abstract class Log
 
     /**
      * Get the handler config.
+     *
      * @param string|null $key The config key.
-     * @return array|null
      */
     public static function getConfig(string|null $key = null): array|null
     {
@@ -82,6 +69,7 @@ abstract class Log
 
     /**
      * Get the key for an logger instance.
+     *
      * @param Logger $logger The logger.
      * @return string|null The logger key.
      */
@@ -92,6 +80,7 @@ abstract class Log
 
     /**
      * Determine if a config exists.
+     *
      * @param string $key The config key.
      * @return bool TRUE if the config exists, otherwise FALSE.
      */
@@ -102,6 +91,7 @@ abstract class Log
 
     /**
      * Determine if a handler is loaded.
+     *
      * @param string $key The config key.
      * @return bool TRUE if the handler is loaded, otherwise FALSE.
      */
@@ -112,8 +102,10 @@ abstract class Log
 
     /**
      * Load a handler.
+     *
      * @param array $options Options for the handler.
      * @return Logger The handler.
+     *
      * @throws LogException if the handler is not valid.
      */
     public static function load(array $options = []): Logger
@@ -131,8 +123,10 @@ abstract class Log
 
     /**
      * Set handler config.
+     *
      * @param string|array $key The config key.
      * @param array|null $options The config options.
+     *
      * @throws LogException if the config is not valid.
      */
     public static function setConfig(array|string $key, array|null $options = null): void
@@ -158,6 +152,7 @@ abstract class Log
 
     /**
      * Unload a handler.
+     *
      * @param string $key The config key.
      * @return bool TRUE if the handler was removed, otherwise FALSE.
      */
@@ -175,6 +170,7 @@ abstract class Log
 
     /**
      * Load a shared handler instance.
+     *
      * @param string $key The config key.
      * @return Logger The handler.
      */
@@ -184,7 +180,25 @@ abstract class Log
     }
 
     /**
+     * Log a message.
+     *
+     * @param string $type The log type.
+     * @param array $arguments Arguments to pass to the log method.
+     *
+     * @throws BadMethodCallException if the log type is not valid.
+     */
+    public static function __callStatic(string $type, array $arguments): void
+    {
+        if (!array_key_exists($type, static::$levels)) {
+            throw new BadMethodCallException();
+        }
+
+        static::log($type, ...$arguments);
+    }
+
+    /**
      * Interpolate a message.
+     *
      * @param string $message The log message.
      * @param array $data Additional data to interpolate.
      * @return string The interpolated message.
@@ -237,6 +251,7 @@ abstract class Log
 
     /**
      * Log a message.
+     *
      * @param string $type The log type.
      * @param string $message The log message.
      * @param array $data Additional data to interpolate.

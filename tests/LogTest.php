@@ -10,24 +10,6 @@ use PHPUnit\Framework\TestCase;
 
 final class LogTest extends TestCase
 {
-    protected function setUp(): void
-    {
-        Log::clear();
-
-        Log::setConfig([
-            'default' => [
-                'className' => FileLogger::class,
-                'threshold' => 8,
-                'path' => 'log'
-            ],
-            'error' => [
-                'className' => FileLogger::class,
-                'threshold' => 5,
-                'path' => 'error'
-            ]
-        ]);
-    }
-
     public function testGetConfig(): void
     {
         $this->assertSame(
@@ -35,13 +17,13 @@ final class LogTest extends TestCase
                 'default' => [
                     'className' => FileLogger::class,
                     'threshold' => 8,
-                    'path' => 'log'
+                    'path' => 'log',
                 ],
                 'error' => [
                     'className' => FileLogger::class,
                     'threshold' => 5,
-                    'path' => 'error'
-                ]
+                    'path' => 'error',
+                ],
             ],
             Log::getConfig()
         );
@@ -53,7 +35,7 @@ final class LogTest extends TestCase
             [
                 'className' => FileLogger::class,
                 'threshold' => 5,
-                'path' => 'error'
+                'path' => 'error',
             ],
             Log::getConfig('error')
         );
@@ -74,7 +56,7 @@ final class LogTest extends TestCase
         $handler = Log::load([
             'className' => FileLogger::class,
             'threshold' => 8,
-            'path' => 'log'
+            'path' => 'log',
         ]);
 
         $this->assertNull(
@@ -112,7 +94,7 @@ final class LogTest extends TestCase
         $this->assertInstanceOf(
             FileLogger::class,
             Log::load([
-                'className' => FileLogger::class
+                'className' => FileLogger::class,
             ])
         );
     }
@@ -122,7 +104,7 @@ final class LogTest extends TestCase
         $this->expectException(LogException::class);
 
         Log::load([
-            'className' => 'Invalid'
+            'className' => 'Invalid',
         ]);
     }
 
@@ -131,14 +113,14 @@ final class LogTest extends TestCase
         Log::setConfig('test', [
             'className' => FileLogger::class,
             'threshold' => 1,
-            'path' => 'log'
+            'path' => 'log',
         ]);
 
         $this->assertSame(
             [
                 'className' => FileLogger::class,
                 'threshold' => 1,
-                'path' => 'log'
+                'path' => 'log',
             ],
             Log::getConfig('test')
         );
@@ -151,7 +133,7 @@ final class LogTest extends TestCase
         Log::setConfig('default', [
             'className' => FileLogger::class,
             'threshold' => 1,
-            'path' => 'log'
+            'path' => 'log',
         ]);
     }
 
@@ -205,5 +187,23 @@ final class LogTest extends TestCase
             FileLogger::class,
             $handler1
         );
+    }
+
+    protected function setUp(): void
+    {
+        Log::clear();
+
+        Log::setConfig([
+            'default' => [
+                'className' => FileLogger::class,
+                'threshold' => 8,
+                'path' => 'log',
+            ],
+            'error' => [
+                'className' => FileLogger::class,
+                'threshold' => 5,
+                'path' => 'error',
+            ],
+        ]);
     }
 }

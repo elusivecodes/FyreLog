@@ -11,7 +11,6 @@ use PHPUnit\Framework\TestCase;
 
 use function date;
 use function file_get_contents;
-
 use function json_encode;
 use function rmdir;
 use function unlink;
@@ -29,30 +28,8 @@ final class FileTest extends TestCase
         'warning' => 5,
         'notice' => 6,
         'info' => 7,
-        'debug' => 8
+        'debug' => 8,
     ];
-
-    protected function setup(): void
-    {
-        Log::clear();
-
-        Log::setConfig([
-            'default' => [
-                'className' => FileLogger::class,
-                'threshold' => 8,
-                'path' => 'log'
-            ]
-        ]);
-    }
-
-    protected function tearDown(): void
-    {
-        foreach ($this->levels as $type => $level) {
-            @unlink('log/'.$type.'.log');
-        }
-
-        @rmdir('log');
-    }
 
     public function testAppends(): void
     {
@@ -124,7 +101,7 @@ final class FileTest extends TestCase
 
         Log::clear();
         Log::setConfig('invalid', [
-            'className' => 'Invalid'
+            'className' => 'Invalid',
         ]);
 
         Log::debug('test');
@@ -156,11 +133,33 @@ final class FileTest extends TestCase
             Log::setConfig('file', [
                 'className' => FileLogger::class,
                 'threshold' => $threshold - 1,
-                'path' => 'log'
+                'path' => 'log',
             ]);
             Log::$type('test');
 
             $this->assertFileDoesNotExist('log/'.$type.'.log');
         }
+    }
+
+    protected function setup(): void
+    {
+        Log::clear();
+
+        Log::setConfig([
+            'default' => [
+                'className' => FileLogger::class,
+                'threshold' => 8,
+                'path' => 'log',
+            ],
+        ]);
+    }
+
+    protected function tearDown(): void
+    {
+        foreach ($this->levels as $type => $level) {
+            @unlink('log/'.$type.'.log');
+        }
+
+        @rmdir('log');
     }
 }
