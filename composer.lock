@@ -8,16 +8,16 @@
     "packages": [
         {
             "name": "fyre/filesystem",
-            "version": "v2.0.5",
+            "version": "v2.0.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/elusivecodes/FyreFileSystem.git",
-                "reference": "63a31f32a28f610b798edba4ee417fde341363d8"
+                "reference": "c0b645ffe42bbdff7c3840935fe505f66e511460"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/elusivecodes/FyreFileSystem/zipball/63a31f32a28f610b798edba4ee417fde341363d8",
-                "reference": "63a31f32a28f610b798edba4ee417fde341363d8",
+                "url": "https://api.github.com/repos/elusivecodes/FyreFileSystem/zipball/c0b645ffe42bbdff7c3840935fe505f66e511460",
+                "reference": "c0b645ffe42bbdff7c3840935fe505f66e511460",
                 "shasum": ""
             },
             "require": {
@@ -47,22 +47,22 @@
             "description": "A file/folder library.",
             "support": {
                 "issues": "https://github.com/elusivecodes/FyreFileSystem/issues",
-                "source": "https://github.com/elusivecodes/FyreFileSystem/tree/v2.0.5"
+                "source": "https://github.com/elusivecodes/FyreFileSystem/tree/v2.0.6"
             },
-            "time": "2024-06-25T05:51:52+00:00"
+            "time": "2024-06-29T06:30:15+00:00"
         },
         {
             "name": "fyre/path",
-            "version": "v2.0.6",
+            "version": "v2.0.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/elusivecodes/FyrePath.git",
-                "reference": "43d20f37fd729df58196042083608effc713248a"
+                "reference": "b7eb7c860c14d92d39ecf2645c617db3a9eb8f05"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/elusivecodes/FyrePath/zipball/43d20f37fd729df58196042083608effc713248a",
-                "reference": "43d20f37fd729df58196042083608effc713248a",
+                "url": "https://api.github.com/repos/elusivecodes/FyrePath/zipball/b7eb7c860c14d92d39ecf2645c617db3a9eb8f05",
+                "reference": "b7eb7c860c14d92d39ecf2645c617db3a9eb8f05",
                 "shasum": ""
             },
             "require-dev": {
@@ -89,9 +89,9 @@
             "description": "A path utility library.",
             "support": {
                 "issues": "https://github.com/elusivecodes/FyrePath/issues",
-                "source": "https://github.com/elusivecodes/FyrePath/tree/v2.0.6"
+                "source": "https://github.com/elusivecodes/FyrePath/tree/v2.0.7"
             },
-            "time": "2024-06-25T04:11:21+00:00"
+            "time": "2024-06-29T01:47:53+00:00"
         }
     ],
     "packages-dev": [
@@ -590,16 +590,16 @@
         },
         {
             "name": "fyre/php-cs-fixer-config",
-            "version": "v1.0.6",
+            "version": "v1.0.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/elusivecodes/PHP-CS-Fixer-Config.git",
-                "reference": "bdd3e4a99f4365c7a4555cfd063e620a593a734a"
+                "reference": "23bc732655df6062468a44ccf4d3b447a1861e1b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/elusivecodes/PHP-CS-Fixer-Config/zipball/bdd3e4a99f4365c7a4555cfd063e620a593a734a",
-                "reference": "bdd3e4a99f4365c7a4555cfd063e620a593a734a",
+                "url": "https://api.github.com/repos/elusivecodes/PHP-CS-Fixer-Config/zipball/23bc732655df6062468a44ccf4d3b447a1861e1b",
+                "reference": "23bc732655df6062468a44ccf4d3b447a1861e1b",
                 "shasum": ""
             },
             "require": {
@@ -624,9 +624,9 @@
             "description": "PHP-CS-Fixer shareable config for the Fyre style.",
             "support": {
                 "issues": "https://github.com/elusivecodes/PHP-CS-Fixer-Config/issues",
-                "source": "https://github.com/elusivecodes/PHP-CS-Fixer-Config/tree/v1.0.6"
+                "source": "https://github.com/elusivecodes/PHP-CS-Fixer-Config/tree/v1.0.7"
             },
-            "time": "2024-06-25T03:58:42+00:00"
+            "time": "2024-06-27T11:55:28+00:00"
         },
         {
             "name": "myclabs/deep-copy",
@@ -2887,16 +2887,16 @@
         },
         {
             "name": "symfony/console",
-            "version": "v7.1.1",
+            "version": "v7.1.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/console.git",
-                "reference": "9b008f2d7b21c74ef4d0c3de6077a642bc55ece3"
+                "reference": "0aa29ca177f432ab68533432db0de059f39c92ae"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/console/zipball/9b008f2d7b21c74ef4d0c3de6077a642bc55ece3",
-                "reference": "9b008f2d7b21c74ef4d0c3de6077a642bc55ece3",
+                "url": "https://api.github.com/repos/symfony/console/zipball/0aa29ca177f432ab68533432db0de059f39c92ae",
+                "reference": "0aa29ca177f432ab68533432db0de059f39c92ae",
                 "shasum": ""
             },
             "require": {
@@ -2960,7 +2960,7 @@
                 "terminal"
             ],
             "support": {
-                "source": "https://github.com/symfony/console/tree/v7.1.1"
+                "source": "https://github.com/symfony/console/tree/v7.1.2"
             },
             "funding": [
                 {
@@ -2976,7 +2976,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2024-05-31T14:57:53+00:00"
+            "time": "2024-06-28T10:03:55+00:00"
         },
         {
             "name": "symfony/deprecation-contracts",
@@ -3203,16 +3203,16 @@
         },
         {
             "name": "symfony/filesystem",
-            "version": "v7.1.1",
+            "version": "v7.1.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/filesystem.git",
-                "reference": "802e87002f919296c9f606457d9fa327a0b3d6b2"
+                "reference": "92a91985250c251de9b947a14bb2c9390b1a562c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/filesystem/zipball/802e87002f919296c9f606457d9fa327a0b3d6b2",
-                "reference": "802e87002f919296c9f606457d9fa327a0b3d6b2",
+                "url": "https://api.github.com/repos/symfony/filesystem/zipball/92a91985250c251de9b947a14bb2c9390b1a562c",
+                "reference": "92a91985250c251de9b947a14bb2c9390b1a562c",
                 "shasum": ""
             },
             "require": {
@@ -3249,7 +3249,7 @@
             "description": "Provides basic utilities for the filesystem",
             "homepage": "https://symfony.com",
             "support": {
-                "source": "https://github.com/symfony/filesystem/tree/v7.1.1"
+                "source": "https://github.com/symfony/filesystem/tree/v7.1.2"
             },
             "funding": [
                 {
@@ -3265,7 +3265,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2024-05-31T14:57:53+00:00"
+            "time": "2024-06-28T10:03:55+00:00"
         },
         {
             "name": "symfony/finder",
@@ -4080,16 +4080,16 @@
         },
         {
             "name": "symfony/string",
-            "version": "v7.1.1",
+            "version": "v7.1.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/string.git",
-                "reference": "60bc311c74e0af215101235aa6f471bcbc032df2"
+                "reference": "14221089ac66cf82e3cf3d1c1da65de305587ff8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/string/zipball/60bc311c74e0af215101235aa6f471bcbc032df2",
-                "reference": "60bc311c74e0af215101235aa6f471bcbc032df2",
+                "url": "https://api.github.com/repos/symfony/string/zipball/14221089ac66cf82e3cf3d1c1da65de305587ff8",
+                "reference": "14221089ac66cf82e3cf3d1c1da65de305587ff8",
                 "shasum": ""
             },
             "require": {
@@ -4147,7 +4147,7 @@
                 "utf8"
             ],
             "support": {
-                "source": "https://github.com/symfony/string/tree/v7.1.1"
+                "source": "https://github.com/symfony/string/tree/v7.1.2"
             },
             "funding": [
                 {
@@ -4163,7 +4163,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2024-06-04T06:40:14+00:00"
+            "time": "2024-06-28T09:27:18+00:00"
         },
         {
             "name": "theseer/tokenizer",
