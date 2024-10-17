@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace Fyre\Log;
 
 use BadMethodCallException;
-use Closure;
 use Fyre\Log\Exceptions\LogException;
 
 use function array_key_exists;
@@ -269,7 +268,7 @@ abstract class Log
                 continue;
             }
 
-            Closure::fromCallable([$instance, 'handle'])($type, $message);
+            $instance->handle($type, $message);
         }
     }
 }
