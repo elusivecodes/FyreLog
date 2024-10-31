@@ -24,7 +24,7 @@ composer require fyre/log
 In PHP:
 
 ```php
-use Fyre\Log\Log;
+use Fyre\Log\LogManager;
 ```
 
 
