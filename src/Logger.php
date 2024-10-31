@@ -28,7 +28,7 @@ abstract class Logger
     }
 
     /**
-     * Determine if a log level can be handled.
+     * Determine whether a log level can be handled.
      *
      * @param int $level The log level.
      * @return bool Whether the logger can handle the level.

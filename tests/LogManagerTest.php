@@ -5,11 +5,32 @@ namespace Tests;
 
 use Fyre\Log\Exceptions\LogException;
 use Fyre\Log\Handlers\FileLogger;
-use Fyre\Log\Log;
+use Fyre\Log\LogManager;
 use PHPUnit\Framework\TestCase;
 
-final class LogTest extends TestCase
+final class LogManagerTest extends TestCase
 {
+    protected LogManager $log;
+
+    public function testBuild(): void
+    {
+        $this->assertInstanceOf(
+            FileLogger::class,
+            $this->log->build([
+                'className' => FileLogger::class,
+            ])
+        );
+    }
+
+    public function testBuildInvalidHandler(): void
+    {
+        $this->expectException(LogException::class);
+
+        $this->log->build([
+            'className' => 'Invalid',
+        ]);
+    }
+
     public function testGetConfig(): void
     {
         $this->assertSame(
@@ -25,7 +46,7 @@ final class LogTest extends TestCase
                     'path' => 'error',
                 ],
             ],
-            Log::getConfig()
+            $this->log->getConfig()
         );
     }
 
@@ -37,84 +58,45 @@ final class LogTest extends TestCase
                 'threshold' => 5,
                 'path' => 'error',
             ],
-            Log::getConfig('error')
-        );
-    }
-
-    public function testGetKey(): void
-    {
-        $handler = Log::use();
-
-        $this->assertSame(
-            'default',
-            Log::getKey($handler)
-        );
-    }
-
-    public function testGetKeyInvalid(): void
-    {
-        $handler = Log::load([
-            'className' => FileLogger::class,
-            'threshold' => 8,
-            'path' => 'log',
-        ]);
-
-        $this->assertNull(
-            Log::getKey($handler)
+            $this->log->getConfig('error')
         );
     }
 
     public function testIsLoaded(): void
     {
-        Log::use();
+        $this->log->use();
 
         $this->assertTrue(
-            Log::isLoaded()
+            $this->log->isLoaded()
         );
     }
 
     public function testIsLoadedInvalid(): void
     {
         $this->assertFalse(
-            Log::isLoaded('test')
+            $this->log->isLoaded('test')
         );
     }
 
     public function testIsLoadedKey(): void
     {
-        Log::use('error');
+        $this->log->use('error');
 
         $this->assertTrue(
-            Log::isLoaded('error')
+            $this->log->isLoaded('error')
         );
-    }
-
-    public function testLoad(): void
-    {
-        $this->assertInstanceOf(
-            FileLogger::class,
-            Log::load([
-                'className' => FileLogger::class,
-            ])
-        );
-    }
-
-    public function testLoadInvalidHandler(): void
-    {
-        $this->expectException(LogException::class);
-
-        Log::load([
-            'className' => 'Invalid',
-        ]);
     }
 
     public function testSetConfig(): void
     {
-        Log::setConfig('test', [
-            'className' => FileLogger::class,
-            'threshold' => 1,
-            'path' => 'log',
-        ]);
+        $this->assertSame(
+            $this->log,
+            $this->log->setConfig('test', [
+                'className' => FileLogger::class,
+                'threshold' => 1,
+                'path' => 'log',
+            ])
+        );
 
         $this->assertSame(
             [
@@ -122,7 +104,7 @@ final class LogTest extends TestCase
                 'threshold' => 1,
                 'path' => 'log',
             ],
-            Log::getConfig('test')
+            $this->log->getConfig('test')
         );
     }
 
@@ -130,7 +112,7 @@ final class LogTest extends TestCase
     {
         $this->expectException(LogException::class);
 
-        Log::setConfig('default', [
+        $this->log->setConfig('default', [
             'className' => FileLogger::class,
             'threshold' => 1,
             'path' => 'log',
@@ -139,47 +121,50 @@ final class LogTest extends TestCase
 
     public function testUnload(): void
     {
-        Log::use();
+        $this->log->use();
 
-        $this->assertTrue(
-            Log::unload()
+        $this->assertSame(
+            $this->log,
+            $this->log->unload()
         );
 
         $this->assertFalse(
-            Log::isLoaded()
+            $this->log->isLoaded()
         );
         $this->assertFalse(
-            Log::hasConfig()
+            $this->log->hasConfig()
         );
     }
 
     public function testUnloadInvalid(): void
     {
-        $this->assertFalse(
-            Log::unload('test')
+        $this->assertSame(
+            $this->log,
+            $this->log->unload('test')
         );
     }
 
     public function testUnloadKey(): void
     {
-        Log::use('error');
+        $this->log->use('error');
 
-        $this->assertTrue(
-            Log::unload('error')
+        $this->assertSame(
+            $this->log,
+            $this->log->unload('error')
         );
 
         $this->assertFalse(
-            Log::isLoaded('error')
+            $this->log->isLoaded('error')
         );
         $this->assertFalse(
-            Log::hasConfig('error')
+            $this->log->hasConfig('error')
         );
     }
 
     public function testUse(): void
     {
-        $handler1 = Log::use();
-        $handler2 = Log::use();
+        $handler1 = $this->log->use();
+        $handler2 = $this->log->use();
 
         $this->assertSame($handler1, $handler2);
 
@@ -191,9 +176,7 @@ final class LogTest extends TestCase
 
     protected function setUp(): void
     {
-        Log::clear();
-
-        Log::setConfig([
+        $this->log = new LogManager([
             'default' => [
                 'className' => FileLogger::class,
                 'threshold' => 8,

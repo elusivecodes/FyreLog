@@ -6,7 +6,7 @@ namespace Tests;
 use BadMethodCallException;
 use Fyre\Log\Exceptions\LogException;
 use Fyre\Log\Handlers\FileLogger;
-use Fyre\Log\Log;
+use Fyre\Log\LogManager;
 use PHPUnit\Framework\TestCase;
 
 use function date;
@@ -31,10 +31,12 @@ final class FileTest extends TestCase
         'debug' => 8,
     ];
 
+    protected LogManager $log;
+
     public function testAppends(): void
     {
-        Log::debug('test1');
-        Log::debug('test2');
+        $this->log->handle('debug', 'test1');
+        $this->log->handle('debug', 'test2');
 
         $this->assertMatchesRegularExpression(
             '/\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2} - test1/',
@@ -50,7 +52,7 @@ final class FileTest extends TestCase
     public function testData(): void
     {
         foreach ($this->levels as $type => $threshold) {
-            Log::$type('{0}', ['test']);
+            $this->log->handle($type, '{0}', ['test']);
 
             $this->assertMatchesRegularExpression(
                 '/\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2} - test/',
@@ -62,7 +64,7 @@ final class FileTest extends TestCase
     public function testInterpolateGet(): void
     {
         foreach ($this->levels as $type => $threshold) {
-            Log::$type('{get_vars}');
+            $this->log->handle($type, '{get_vars}');
 
             $this->assertEquals(
                 date('Y-m-d H:i:s').' - '.json_encode($_GET, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE)."\r\n",
@@ -74,7 +76,7 @@ final class FileTest extends TestCase
     public function testInterpolatePost(): void
     {
         foreach ($this->levels as $type => $threshold) {
-            Log::$type('{post_vars}');
+            $this->log->handle($type, '{post_vars}');
 
             $this->assertEquals(
                 date('Y-m-d H:i:s').' - '.json_encode($_POST, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE)."\r\n",
@@ -86,7 +88,7 @@ final class FileTest extends TestCase
     public function testInterpolateServer(): void
     {
         foreach ($this->levels as $type => $threshold) {
-            Log::$type('{server_vars}');
+            $this->log->handle($type, '{server_vars}');
 
             $this->assertEquals(
                 date('Y-m-d H:i:s').' - '.json_encode($_SERVER, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE)."\r\n",
@@ -99,25 +101,25 @@ final class FileTest extends TestCase
     {
         $this->expectException(LogException::class);
 
-        Log::clear();
-        Log::setConfig('invalid', [
+        $this->log->clear();
+        $this->log->setConfig('invalid', [
             'className' => 'Invalid',
         ]);
 
-        Log::debug('test');
+        $this->log->handle('debug', 'test');
     }
 
     public function testInvalidLevel(): void
     {
         $this->expectException(BadMethodCallException::class);
 
-        Log::invalid('test');
+        $this->log->handle('invalid', 'test');
     }
 
     public function testLog(): void
     {
         foreach ($this->levels as $type => $threshold) {
-            Log::$type('test');
+            $this->log->handle($type, 'test');
 
             $this->assertMatchesRegularExpression(
                 '/\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2} - test/',
@@ -129,13 +131,13 @@ final class FileTest extends TestCase
     public function testSkipped(): void
     {
         foreach ($this->levels as $type => $threshold) {
-            Log::clear();
-            Log::setConfig('file', [
+            $this->log->clear();
+            $this->log->setConfig('file', [
                 'className' => FileLogger::class,
                 'threshold' => $threshold - 1,
                 'path' => 'log',
             ]);
-            Log::$type('test');
+            $this->log->handle($type, 'test');
 
             $this->assertFileDoesNotExist('log/'.$type.'.log');
         }
@@ -143,9 +145,7 @@ final class FileTest extends TestCase
 
     protected function setup(): void
     {
-        Log::clear();
-
-        Log::setConfig([
+        $this->log = new LogManager([
             'default' => [
                 'className' => FileLogger::class,
                 'threshold' => 8,

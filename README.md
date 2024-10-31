@@ -5,6 +5,7 @@
 
 ## Table Of Contents
 - [Installation](#installation)
+- [Basic Usage](#basic-usage)
 - [Methods](#methods)
 - [Loggers](#loggers)
     - [File](#file)
@@ -27,14 +28,33 @@ use Fyre\Log\Log;
 ```
 
 
+## Basic Usage
+
+- `$config` is an array containing key/value of configuration options.
+
+```php
+$logManager = new LogManager($config);
+```
+
+
 ## Methods
+
+**Build**
+
+Build a [*Logger*](#loggers).
+
+- `$config` is an array containing configuration options.
+
+```php
+$logger = $logManager->build($config);
+```
 
 **Clear**
 
 Clear instances and configs.
 
 ```php
-Log::clear();
+$logManager->clear();
 ```
 
 **Get Config**
@@ -44,53 +64,43 @@ Get a [*Logger*](#loggers) config.
 - `$key` is a string representing the [*Logger*](#loggers) key.
 
 ```php
-$config = Log::getConfig($key);
+$config = $logManager->getConfig($key);
 ```
 
 Alternatively, if the `$key` argument is omitted an array containing all configurations will be returned.
 
 ```php
-$config = Log::getConfig();
+$config = $logManager->getConfig();
 ```
 
-**Get Key**
+**Handle**
 
-Get the key for a [*Logger*](#loggers) instance.
-
-- `$logger` is a [*Logger*](#loggers).
+- `$type` is a string representing the type of log.
+- `$message` is a string representing the log message.
+- `$data` is an array containing data to insert into the message string.
 
 ```php
-$key = Log::getKey($logger);
+$logManager->handle($type, $message, $data);
 ```
 
 **Has Config**
 
-Check if a [*Logger*](#loggers) config exists.
+Determine whether a [*Logger*](#loggers) config exists.
 
-- `$key` is a string representing the [*Logger*](#loggers) key, and will default to `Log::DEFAULT`.
+- `$key` is a string representing the [*Logger*](#loggers) key, and will default to `LogManager::DEFAULT`.
 
 ```php
-$hasConfig = Log::hasConfig($key);
+$hasConfig = $logManager->hasConfig($key);
 ```
 
 **Is Loaded**
 
-Check if a [*Logger*](#loggers) instance is loaded.
+Determine whether a [*Logger*](#loggers) instance is loaded.
 
-- `$key` is a string representing the [*Logger*](#loggers) key, and will default to `Log::DEFAULT`.
-
-```php
-$isLoaded = Log::isLoaded($key);
-```
-
-**Load**
-
-Load a [*Logger*](#loggers).
-
-- `$config` is an array containing configuration options.
+- `$key` is a string representing the [*Logger*](#loggers) key, and will default to `LogManager::DEFAULT`.
 
 ```php
-$logger = Log::load($config);
+$isLoaded = $logManager->isLoaded($key);
 ```
 
 **Set Config**
@@ -101,33 +111,27 @@ Set the [*Logger*](#loggers) config.
 - `$options` is an array containing configuration options.
 
 ```php
-Log::setConfig($key, $options);
-```
-
-Alternatively, a single array can be provided containing key/value of configuration options.
-
-```php
-Log::setConfig($config);
+$logManager->setConfig($key, $options);
 ```
 
 **Unload**
 
 Unload a [*Logger*](#loggers).
 
-- `$key` is a string representing the [*Logger*](#loggers) key, and will default to `Log::DEFAULT`.
+- `$key` is a string representing the [*Logger*](#loggers) key, and will default to `LogManager::DEFAULT`.
 
 ```php
-$unloaded = Log::unload($key);
+$logManager->unload($key);
 ```
 
 **Use**
 
 Load a shared [*Logger*](#loggers) instance.
 
-- `$key` is a string representing the [*Logger*](#loggers) key, and will default to `Log::DEFAULT`.
+- `$key` is a string representing the [*Logger*](#loggers) key, and will default to `LogManager::DEFAULT`.
 
 ```php
-$logger = Log::use($key);
+$logger = $logManager->use($key);
 ```
 
 
@@ -139,7 +143,7 @@ Custom loggers can be created by extending `\Fyre\Log\Logger`, ensuring all belo
 
 **Can Handle**
 
-Determine if a log level can be handled.
+Determine whether a log level can be handled.
 
 - `$level` is a number indicating the log level.
 
@@ -165,7 +169,6 @@ $logger->handle($type, $message);
 
 The File logger can be loaded using custom configuration.
 
-- `$key` is a string representing the logger key.
 - `$options` is an array containing configuration options.
     - `className` must be set to `\Fyre\Log\Handlers\FileLogger`.
     - `dateFormat` is a string representing the date format, and will default to "*Y-m-d H:i:s*".
@@ -176,15 +179,13 @@ The File logger can be loaded using custom configuration.
     - `maxSize` is a number representing the maximum file size before log rotation, and will default to *1048576*.
 
 ```php
-Log::setConfig($key, $options);
-
-$logger = Log::use($key);
+$logger = $logManager->build($options);
 ```
 
 
 ## Logging
 
-Generally, logging is done by calling the static methods of the *Log* class.
+Generally, logging is done by calling the `handle` method of a *LogManager* instance.
 
 This will call the `canHandle` method of all defined logger configs, and if that returns *true* then the `handle` method will also be called.
 
@@ -194,14 +195,14 @@ The default log levels are shown below (in order of severity).
 - `$data` is an array containing data to insert into the message string.
 
 ```php
-Log::emergency($message, $data);   // 1
-Log::alert($message, $data);       // 2
-Log::critical($message, $data);    // 3
-Log::error($message, $data);       // 4
-Log::warning($message, $data);     // 5
-Log::notice($message, $data);      // 6
-Log::info($message, $data);        // 7
-Log::debug($message, $data);       // 8
+$logManager->handle('emergency', $message, $data);   // 1
+$logManager->handle('alert', $message, $data);       // 2
+$logManager->handle('critical', $message, $data);    // 3
+$logManager->handle('error', $message, $data);       // 4
+$logManager->handle('warning', $message, $data);     // 5
+$logManager->handle('notice', $message, $data);      // 6
+$logManager->handle('info', $message, $data);        // 7
+$logManager->handle('debug', $message, $data);       // 8
 ```
 
 There are default placeholders that can also be used in log messages:
