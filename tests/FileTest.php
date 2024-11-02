@@ -4,6 +4,8 @@ declare(strict_types=1);
 namespace Tests;
 
 use BadMethodCallException;
+use Fyre\Config\Config;
+use Fyre\Container\Container;
 use Fyre\Log\Exceptions\LogException;
 use Fyre\Log\Handlers\FileLogger;
 use Fyre\Log\LogManager;
@@ -145,13 +147,16 @@ final class FileTest extends TestCase
 
     protected function setup(): void
     {
-        $this->log = new LogManager([
+        $container = new Container();
+        $container->singleton(Config::class);
+        $container->use(Config::class)->set('Log', [
             'default' => [
                 'className' => FileLogger::class,
                 'threshold' => 8,
                 'path' => 'log',
             ],
         ]);
+        $this->log = $container->use(LogManager::class);
     }
 
     protected function tearDown(): void

@@ -30,11 +30,13 @@ use Fyre\Log\LogManager;
 
 ## Basic Usage
 
-- `$config` is an array containing key/value of configuration options.
+- `$container` is a  [*Container*](https://github.com/elusivecodes/FyreContainer).
 
 ```php
-$logManager = new LogManager($config);
+$logManager = new LogManager($container);
 ```
+
+Default configuration options will be resolved from the "*Log*" key in the [*Config*](https://github.com/elusivecodes/FyreConfig) using the [*Container*](https://github.com/elusivecodes/FyreContainer).
 
 
 ## Methods
@@ -48,6 +50,8 @@ Build a [*Logger*](#loggers).
 ```php
 $logger = $logManager->build($config);
 ```
+
+[*Logger*](#loggers) dependencies will be resolved automatically from the [*Container*](https://github.com/elusivecodes/FyreContainer).
 
 **Clear**
 
@@ -133,6 +137,8 @@ Load a shared [*Logger*](#loggers) instance.
 ```php
 $logger = $logManager->use($key);
 ```
+
+[*Logger*](#loggers) dependencies will be resolved automatically from the [*Container*](https://github.com/elusivecodes/FyreContainer).
 
 
 ## Loggers

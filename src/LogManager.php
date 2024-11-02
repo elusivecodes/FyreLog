@@ -4,6 +4,8 @@ declare(strict_types=1);
 namespace Fyre\Log;
 
 use BadMethodCallException;
+use Fyre\Config\Config;
+use Fyre\Container\Container;
 use Fyre\Log\Exceptions\LogException;
 
 use function array_key_exists;
@@ -41,16 +43,23 @@ class LogManager
 
     protected array $config = [];
 
+    protected Container $container;
+
     protected array $instances = [];
 
     /**
      * New LogManager constructor.
      *
-     * @param array $config The LogManager config.
+     * @param Container $container The Container.
+     * @param Config $config The Config.
      */
-    public function __construct(array $config = [])
+    public function __construct(Container $container, Config $config)
     {
-        foreach ($config as $key => $options) {
+        $this->container = $container;
+
+        $handlers = $config->get('Log', []);
+
+        foreach ($handlers as $key => $options) {
             $this->setConfig($key, $options);
         }
     }
@@ -73,7 +82,7 @@ class LogManager
             throw LogException::forInvalidClass($options['className']);
         }
 
-        return new $options['className']($options);
+        return $this->container->build($options['className'], ['options' => $options]);
     }
 
     /**

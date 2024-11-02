@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace Tests;
 
+use Fyre\Config\Config;
+use Fyre\Container\Container;
 use Fyre\Log\Exceptions\LogException;
 use Fyre\Log\Handlers\FileLogger;
 use Fyre\Log\LogManager;
@@ -176,7 +178,9 @@ final class LogManagerTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->log = new LogManager([
+        $container = new Container();
+        $container->singleton(Config::class);
+        $container->use(Config::class)->set('Log', [
             'default' => [
                 'className' => FileLogger::class,
                 'threshold' => 8,
@@ -188,5 +192,6 @@ final class LogManagerTest extends TestCase
                 'path' => 'error',
             ],
         ]);
+        $this->log = $container->use(LogManager::class);
     }
 }

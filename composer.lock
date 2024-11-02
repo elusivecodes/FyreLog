@@ -4,8 +4,138 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "67abd4b4bbbbe883bd6a47ad7206c802",
+    "content-hash": "37139173e252485b5d5d63db104c8874",
     "packages": [
+        {
+            "name": "fyre/array",
+            "version": "v2.0.12",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/elusivecodes/FyreArray.git",
+                "reference": "38fabc1ca44f68a42c4b293e53102bdd0e0af8e8"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/elusivecodes/FyreArray/zipball/38fabc1ca44f68a42c4b293e53102bdd0e0af8e8",
+                "reference": "38fabc1ca44f68a42c4b293e53102bdd0e0af8e8",
+                "shasum": ""
+            },
+            "require-dev": {
+                "friendsofphp/php-cs-fixer": "^3.59",
+                "fyre/php-cs-fixer-config": "^1.0",
+                "phpunit/phpunit": "^11"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Fyre\\Utility\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "elusivecodes",
+                    "email": "elusivecodes@gmail.com"
+                }
+            ],
+            "description": "An array utility library.",
+            "support": {
+                "issues": "https://github.com/elusivecodes/FyreArray/issues",
+                "source": "https://github.com/elusivecodes/FyreArray/tree/v2.0.12"
+            },
+            "time": "2024-10-30T10:48:56+00:00"
+        },
+        {
+            "name": "fyre/config",
+            "version": "v4.0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/elusivecodes/FyreConfig.git",
+                "reference": "d9c5d60c786ef65996121562496b0886058d13b4"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/elusivecodes/FyreConfig/zipball/d9c5d60c786ef65996121562496b0886058d13b4",
+                "reference": "d9c5d60c786ef65996121562496b0886058d13b4",
+                "shasum": ""
+            },
+            "require": {
+                "fyre/array": "^2.0",
+                "fyre/path": "^2.0"
+            },
+            "require-dev": {
+                "friendsofphp/php-cs-fixer": "^3.59",
+                "fyre/php-cs-fixer-config": "^1.0",
+                "phpunit/phpunit": "^11"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Fyre\\Config\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "elusivecodes",
+                    "email": "elusivecodes@gmail.com"
+                }
+            ],
+            "description": "A configuration library.",
+            "support": {
+                "issues": "https://github.com/elusivecodes/FyreConfig/issues",
+                "source": "https://github.com/elusivecodes/FyreConfig/tree/v4.0.1"
+            },
+            "time": "2024-10-30T11:51:58+00:00"
+        },
+        {
+            "name": "fyre/container",
+            "version": "v1.0.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/elusivecodes/FyreContainer.git",
+                "reference": "d84e485930b6782fb20300a4ab87a404280f2114"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/elusivecodes/FyreContainer/zipball/d84e485930b6782fb20300a4ab87a404280f2114",
+                "reference": "d84e485930b6782fb20300a4ab87a404280f2114",
+                "shasum": ""
+            },
+            "require-dev": {
+                "friendsofphp/php-cs-fixer": "^3.59",
+                "fyre/php-cs-fixer-config": "^1.0",
+                "phpunit/phpunit": "^11"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Fyre\\Container\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "elusivecodes",
+                    "email": "elusivecodes@gmail.com"
+                }
+            ],
+            "description": "A container library.",
+            "support": {
+                "issues": "https://github.com/elusivecodes/FyreContainer/issues",
+                "source": "https://github.com/elusivecodes/FyreContainer/tree/v1.0.2"
+            },
+            "time": "2024-11-02T02:28:03+00:00"
+        },
         {
             "name": "fyre/filesystem",
             "version": "v2.0.7",
