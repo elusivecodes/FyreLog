@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "37139173e252485b5d5d63db104c8874",
+    "content-hash": "d1671d383345261bcc368ebdd420d452",
     "packages": [
         {
             "name": "fyre/array",

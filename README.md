@@ -31,12 +31,27 @@ use Fyre\Log\LogManager;
 ## Basic Usage
 
 - `$container` is a  [*Container*](https://github.com/elusivecodes/FyreContainer).
+- `$config` is a  [*Config*](https://github.com/elusivecodes/FyreConfig).
 
 ```php
 $logManager = new LogManager($container);
 ```
 
-Default configuration options will be resolved from the "*Log*" key in the [*Config*](https://github.com/elusivecodes/FyreConfig) using the [*Container*](https://github.com/elusivecodes/FyreContainer).
+Default configuration options will be resolved from the "*Log*" key in the [*Config*](https://github.com/elusivecodes/FyreConfig).
+
+**Autoloading**
+
+It is recommended to bind the *LogManager* to the [*Container*](https://github.com/elusivecodes/FyreContainer) as a singleton.
+
+```php
+$container->singleton(LogManager::class);
+```
+
+Any dependencies will be injected automatically when loading from the [*Container*](https://github.com/elusivecodes/FyreContainer).
+
+```php
+$logManager = $container->use(LogManager::class);
+```
 
 
 ## Methods
