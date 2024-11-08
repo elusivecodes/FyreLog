@@ -30,7 +30,7 @@ use Fyre\Log\LogManager;
 
 ## Basic Usage
 
-- `$container` is a  [*Container*](https://github.com/elusivecodes/FyreContainer).
+- `$container` is a [*Container*](https://github.com/elusivecodes/FyreContainer).
 - `$config` is a  [*Config*](https://github.com/elusivecodes/FyreConfig).
 
 ```php
