@@ -19,9 +19,4 @@ class LogException extends RuntimeException
     {
         return new static('Log handler class not found: '.$className);
     }
-
-    public static function forInvalidConfig(string $key): static
-    {
-        return new static('Cache handler invalid config: '.$key);
-    }
 }
