@@ -200,7 +200,7 @@ The File logger can be loaded using custom configuration.
     - `maxSize` is a number representing the maximum file size before log rotation, and will default to *1048576*.
 
 ```php
-$logger = $logManager->build($options);
+$container->use(Config::class)->set('Log.file', $options);
 ```
 
 
