@@ -42,12 +42,12 @@ final class FileTest extends TestCase
 
         $this->assertMatchesRegularExpression(
             '/\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2} - test1/',
-            file_get_contents('log/debug.log')
+            file_get_contents('log/debug-cli.log')
         );
 
         $this->assertMatchesRegularExpression(
             '/\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2} - test2/',
-            file_get_contents('log/debug.log')
+            file_get_contents('log/debug-cli.log')
         );
     }
 
@@ -58,7 +58,7 @@ final class FileTest extends TestCase
 
             $this->assertMatchesRegularExpression(
                 '/\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2} - test/',
-                file_get_contents('log/'.$type.'.log')
+                file_get_contents('log/'.$type.'-cli.log')
             );
         }
     }
@@ -70,7 +70,7 @@ final class FileTest extends TestCase
 
             $this->assertEquals(
                 date('Y-m-d H:i:s').' - '.json_encode($_GET, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE)."\r\n",
-                file_get_contents('log/'.$type.'.log')
+                file_get_contents('log/'.$type.'-cli.log')
             );
         }
     }
@@ -82,7 +82,7 @@ final class FileTest extends TestCase
 
             $this->assertEquals(
                 date('Y-m-d H:i:s').' - '.json_encode($_POST, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE)."\r\n",
-                file_get_contents('log/'.$type.'.log')
+                file_get_contents('log/'.$type.'-cli.log')
             );
         }
     }
@@ -94,7 +94,7 @@ final class FileTest extends TestCase
 
             $this->assertEquals(
                 date('Y-m-d H:i:s').' - '.json_encode($_SERVER, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE)."\r\n",
-                file_get_contents('log/'.$type.'.log')
+                file_get_contents('log/'.$type.'-cli.log')
             );
         }
     }
@@ -125,7 +125,7 @@ final class FileTest extends TestCase
 
             $this->assertMatchesRegularExpression(
                 '/\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2} - test/',
-                file_get_contents('log/'.$type.'.log')
+                file_get_contents('log/'.$type.'-cli.log')
             );
         }
     }
@@ -141,7 +141,7 @@ final class FileTest extends TestCase
             ]);
             $this->log->handle($type, 'test');
 
-            $this->assertFileDoesNotExist('log/'.$type.'.log');
+            $this->assertFileDoesNotExist('log/'.$type.'-cli.log');
         }
     }
 
@@ -162,7 +162,7 @@ final class FileTest extends TestCase
     protected function tearDown(): void
     {
         foreach ($this->levels as $type => $level) {
-            @unlink('log/'.$type.'.log');
+            @unlink('log/'.$type.'-cli.log');
         }
 
         @rmdir('log');

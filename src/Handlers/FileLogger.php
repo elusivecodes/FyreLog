@@ -10,6 +10,8 @@ use Fyre\Utility\Path;
 use function date;
 use function time;
 
+use const PHP_SAPI;
+
 /**
  * FileLogger
  */
@@ -33,6 +35,10 @@ class FileLogger extends Logger
     public function __construct(array $options = [])
     {
         parent::__construct($options);
+
+        if (PHP_SAPI === 'cli') {
+            $this->config['suffix'] ??= '-cli';
+        }
 
         $this->path = Path::resolve($this->config['path']);
     }
