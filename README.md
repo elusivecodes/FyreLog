@@ -194,7 +194,7 @@ The File logger can be loaded using custom configuration.
     - `className` must be set to `\Fyre\Log\Handlers\FileLogger`.
     - `dateFormat` is a string representing the date format, and will default to "*Y-m-d H:i:s*".
     - `threshold` is a number representing the log threshold, and will default to *0*.
-    - `suffix` is a string representing the filename suffix, and will default to *null*.
+    - `suffix` is a string representing the filename suffix, and will default to *null* (or "*-cli*" if running from the CLI).
     - `path` is a string representing the directory path, and will default to "*/var/log*".
     - `extension` is a string representing the file extension, and will default to "*log*".
     - `maxSize` is a number representing the maximum file size before log rotation, and will default to *1048576*.
