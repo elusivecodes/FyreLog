@@ -236,7 +236,7 @@ class LogManager
                     $replacements[$replaceKey] = json_encode($data[$key], $jsonFlags);
                 }
             } else {
-                $data = match ($key) {
+                $value = match ($key) {
                     'backtrace' => debug_backtrace(0),
                     'get_vars' => $_GET,
                     'post_vars' => $_POST,
@@ -245,8 +245,8 @@ class LogManager
                     default => null
                 };
 
-                if ($data !== null) {
-                    $replacements[$replaceKey] = json_encode($data, $jsonFlags);
+                if ($value !== null) {
+                    $replacements[$replaceKey] = json_encode($value, $jsonFlags);
                 }
             }
         }
