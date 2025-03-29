@@ -114,8 +114,9 @@ class LogManager
      * @param string $type The log type.
      * @param string $message The log message.
      * @param array $data Additional data to interpolate.
+     * @param string|null $scope The log scope.
      */
-    public function handle(string $type, string $message, array $data = []): void
+    public function handle(string $type, string $message, array $data = [], string|null $scope = null): void
     {
         if (!array_key_exists($type, static::$levels)) {
             throw new BadMethodCallException();
@@ -123,16 +124,15 @@ class LogManager
 
         $level = static::$levels[$type];
 
-        $message = static::interpolate($message, $data);
-
         foreach ($this->config as $key => $config) {
             $instance = static::use($key);
 
-            if (!$instance->canHandle($level)) {
+            if (!$instance->canHandle($level, $scope)) {
                 continue;
             }
 
-            $instance->handle($type, $message);
+            $interpolated ??= static::interpolate($message, $data);
+            $instance->handle($type, $interpolated);
         }
     }
 

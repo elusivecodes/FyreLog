@@ -11,9 +11,9 @@ use Fyre\Log\Handlers\FileLogger;
 use Fyre\Log\LogManager;
 use PHPUnit\Framework\TestCase;
 
-use function date;
 use function file_get_contents;
 use function json_encode;
+use function preg_quote;
 use function rmdir;
 use function unlink;
 
@@ -42,13 +42,16 @@ final class FileTest extends TestCase
 
         $this->assertMatchesRegularExpression(
             '/\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2} - test1/',
-            file_get_contents('log/debug-cli.log')
+            file_get_contents('log/debug.log')
         );
 
         $this->assertMatchesRegularExpression(
             '/\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2} - test2/',
-            file_get_contents('log/debug-cli.log')
+            file_get_contents('log/debug.log')
         );
+
+        $this->assertFileExists('log/all.log');
+        $this->assertFileDoesNotExist('log/scoped.log');
     }
 
     public function testData(): void
@@ -58,9 +61,12 @@ final class FileTest extends TestCase
 
             $this->assertMatchesRegularExpression(
                 '/\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2} - test/',
-                file_get_contents('log/'.$type.'-cli.log')
+                file_get_contents('log/'.$type.'.log')
             );
         }
+
+        $this->assertFileExists('log/all.log');
+        $this->assertFileDoesNotExist('log/scoped.log');
     }
 
     public function testInterpolateGet(): void
@@ -68,11 +74,14 @@ final class FileTest extends TestCase
         foreach ($this->levels as $type => $threshold) {
             $this->log->handle($type, '{get_vars}');
 
-            $this->assertEquals(
-                date('Y-m-d H:i:s').' - '.json_encode($_GET, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE)."\r\n",
-                file_get_contents('log/'.$type.'-cli.log')
+            $this->assertMatchesRegularExpression(
+                '/\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2} - '.preg_quote(json_encode($_GET, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE), '/').'/',
+                file_get_contents('log/'.$type.'.log')
             );
         }
+
+        $this->assertFileExists('log/all.log');
+        $this->assertFileDoesNotExist('log/scoped.log');
     }
 
     public function testInterpolatePost(): void
@@ -80,11 +89,14 @@ final class FileTest extends TestCase
         foreach ($this->levels as $type => $threshold) {
             $this->log->handle($type, '{post_vars}');
 
-            $this->assertEquals(
-                date('Y-m-d H:i:s').' - '.json_encode($_POST, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE)."\r\n",
-                file_get_contents('log/'.$type.'-cli.log')
+            $this->assertMatchesRegularExpression(
+                '/\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2} - '.preg_quote(json_encode($_POST, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE), '/').'/',
+                file_get_contents('log/'.$type.'.log')
             );
         }
+
+        $this->assertFileExists('log/all.log');
+        $this->assertFileDoesNotExist('log/scoped.log');
     }
 
     public function testInterpolateServer(): void
@@ -92,11 +104,14 @@ final class FileTest extends TestCase
         foreach ($this->levels as $type => $threshold) {
             $this->log->handle($type, '{server_vars}');
 
-            $this->assertEquals(
-                date('Y-m-d H:i:s').' - '.json_encode($_SERVER, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE)."\r\n",
-                file_get_contents('log/'.$type.'-cli.log')
+            $this->assertMatchesRegularExpression(
+                '/\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2} - '.preg_quote(json_encode($_SERVER, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE), '/').'/',
+                file_get_contents('log/'.$type.'.log')
             );
         }
+
+        $this->assertFileExists('log/all.log');
+        $this->assertFileDoesNotExist('log/scoped.log');
     }
 
     public function testInvalidHandler(): void
@@ -125,9 +140,22 @@ final class FileTest extends TestCase
 
             $this->assertMatchesRegularExpression(
                 '/\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2} - test/',
-                file_get_contents('log/'.$type.'-cli.log')
+                file_get_contents('log/'.$type.'.log')
             );
         }
+
+        $this->assertFileExists('log/all.log');
+        $this->assertFileDoesNotExist('log/scoped.log');
+    }
+
+    public function testScope(): void
+    {
+        $this->log->handle('error', 'test', scope: 'scoped');
+
+        $this->assertMatchesRegularExpression(
+            '/\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2} - test/',
+            file_get_contents('log/scoped.log')
+        );
     }
 
     public function testSkipped(): void
@@ -141,8 +169,11 @@ final class FileTest extends TestCase
             ]);
             $this->log->handle($type, 'test');
 
-            $this->assertFileDoesNotExist('log/'.$type.'-cli.log');
+            $this->assertFileDoesNotExist('log/'.$type.'.log');
         }
+
+        $this->assertFileDoesNotExist('log/all.log');
+        $this->assertFileDoesNotExist('log/scoped.log');
     }
 
     protected function setup(): void
@@ -154,6 +185,21 @@ final class FileTest extends TestCase
                 'className' => FileLogger::class,
                 'threshold' => 8,
                 'path' => 'log',
+                'suffix' => '',
+            ],
+            'scoped' => [
+                'className' => FileLogger::class,
+                'threshold' => 8,
+                'scopes' => ['scoped'],
+                'path' => 'log',
+                'file' => 'scoped',
+            ],
+            'all' => [
+                'className' => FileLogger::class,
+                'threshold' => 8,
+                'scopes' => null,
+                'path' => 'log',
+                'file' => 'all',
             ],
         ]);
         $this->log = $container->use(LogManager::class);
@@ -162,8 +208,11 @@ final class FileTest extends TestCase
     protected function tearDown(): void
     {
         foreach ($this->levels as $type => $level) {
-            @unlink('log/'.$type.'-cli.log');
+            @unlink('log/'.$type.'.log');
         }
+
+        @unlink('log/scoped.log');
+        @unlink('log/all.log');
 
         @rmdir('log');
     }

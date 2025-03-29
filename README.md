@@ -97,6 +97,7 @@ $config = $logManager->getConfig();
 - `$type` is a string representing the type of log.
 - `$message` is a string representing the log message.
 - `$data` is an array containing data to insert into the message string.
+- `$scope` is a string representing the log scope, and will default to *null*.
 
 ```php
 $logManager->handle($type, $message, $data);
@@ -167,12 +168,13 @@ Custom loggers can be created by extending `\Fyre\Log\Logger`, ensuring all belo
 Determine whether a log level can be handled.
 
 - `$level` is a number indicating the log level.
+- `$scope` is a string representing the log scope, and will default to *null*.
 
 ```php
-$canHandle = $logger->canHandle($level);
+$canHandle = $logger->canHandle($level, $scope);
 ```
 
-By default, this method will return *true* if the `$level` is below or equal to the `threshold` defined in the logger config, otherwise *false*.
+By default, this method will return *true* if the `$level` is below or equal to the `threshold` defined in the logger config, and the `$scope` is contained in the `scopes` of the logger config or the `scopes` is set to *null*, otherwise *false*.
 
 **Handle**
 
@@ -194,8 +196,9 @@ The File logger can be loaded using custom configuration.
     - `className` must be set to `\Fyre\Log\Handlers\FileLogger`.
     - `dateFormat` is a string representing the date format, and will default to "*Y-m-d H:i:s*".
     - `threshold` is a number representing the log threshold, and will default to *0*.
-    - `suffix` is a string representing the filename suffix, and will default to *null* (or "*-cli*" if running from the CLI).
     - `path` is a string representing the directory path, and will default to "*/var/log*".
+    - `file` is a string representing the file name, and will default *null* (the type of log will be used instead).
+    - `suffix` is a string representing the filename suffix, and will default to *null* (or "*-cli*" if running from the CLI).
     - `extension` is a string representing the file extension, and will default to "*log*".
     - `maxSize` is a number representing the maximum file size before log rotation, and will default to *1048576*.
 

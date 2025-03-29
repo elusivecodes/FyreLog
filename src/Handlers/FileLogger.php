@@ -7,7 +7,7 @@ use Fyre\FileSystem\File;
 use Fyre\Log\Logger;
 use Fyre\Utility\Path;
 
-use function date;
+use function gmdate;
 use function time;
 
 use const PHP_SAPI;
@@ -19,6 +19,7 @@ class FileLogger extends Logger
 {
     protected static array $defaults = [
         'path' => '/var/log/',
+        'file' => null,
         'suffix' => null,
         'extension' => 'log',
         'maxSize' => 1048576,
@@ -36,7 +37,7 @@ class FileLogger extends Logger
     {
         parent::__construct($options);
 
-        if (PHP_SAPI === 'cli') {
+        if (PHP_SAPI === 'cli' && !$this->config['file']) {
             $this->config['suffix'] ??= '-cli';
         }
 
@@ -51,7 +52,10 @@ class FileLogger extends Logger
      */
     public function handle(string $type, string $message): void
     {
-        $filePath = Path::join($this->path, $type.($this->config['suffix'] ?? '').'.'.$this->config['extension']);
+        $file = ($this->config['file'] ?? $type).
+            ($this->config['suffix'] ?? '').
+            ($this->config['extension'] ? '.'.$this->config['extension'] : '');
+        $filePath = Path::join($this->path, $file);
 
         $file = new File($filePath, true);
 
@@ -63,7 +67,7 @@ class FileLogger extends Logger
             ->open('a')
             ->lock();
 
-        if ($file->size() > $this->config['maxSize']) {
+        if ($file->size() >= $this->config['maxSize']) {
             $oldPath = Path::join($this->path, $type.'.'.time().'.'.$this->config['extension']);
 
             $file
@@ -73,7 +77,7 @@ class FileLogger extends Logger
                 ->lock();
         }
 
-        $message = date($this->config['dateFormat']).' - '.$message."\r\n";
+        $message = gmdate($this->config['dateFormat']).' - '.$message."\r\n";
 
         $file
             ->write($message)
