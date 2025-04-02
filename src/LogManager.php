@@ -13,6 +13,7 @@ use function array_keys;
 use function array_unique;
 use function class_exists;
 use function debug_backtrace;
+use function in_array;
 use function is_scalar;
 use function is_subclass_of;
 use function json_encode;
@@ -31,14 +32,14 @@ class LogManager
     public const DEFAULT = 'default';
 
     protected static array $levels = [
-        'emergency' => 1,
-        'alert' => 2,
-        'critical' => 3,
-        'error' => 4,
-        'warning' => 5,
-        'notice' => 6,
-        'info' => 7,
-        'debug' => 8,
+        'emergency',
+        'alert',
+        'critical',
+        'error',
+        'warning',
+        'notice',
+        'info',
+        'debug',
     ];
 
     protected array $config = [];
@@ -118,16 +119,16 @@ class LogManager
      */
     public function handle(string $type, string $message, array $data = [], string|null $scope = null): void
     {
-        if (!array_key_exists($type, static::$levels)) {
+        if (!in_array($type, static::$levels)) {
             throw new BadMethodCallException();
         }
 
-        $level = static::$levels[$type];
+        $scope ??= $type;
 
         foreach ($this->config as $key => $config) {
             $instance = static::use($key);
 
-            if (!$instance->canHandle($level, $scope)) {
+            if (!$instance->canHandle($scope)) {
                 continue;
             }
 

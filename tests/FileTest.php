@@ -11,10 +11,12 @@ use Fyre\Log\Handlers\FileLogger;
 use Fyre\Log\LogManager;
 use PHPUnit\Framework\TestCase;
 
+use function array_diff;
 use function file_get_contents;
 use function json_encode;
 use function preg_quote;
 use function rmdir;
+use function strtoupper;
 use function unlink;
 
 use const JSON_THROW_ON_ERROR;
@@ -23,14 +25,14 @@ use const JSON_UNESCAPED_UNICODE;
 final class FileTest extends TestCase
 {
     protected array $levels = [
-        'emergency' => 1,
-        'alert' => 2,
-        'critical' => 3,
-        'error' => 4,
-        'warning' => 5,
-        'notice' => 6,
-        'info' => 7,
-        'debug' => 8,
+        'emergency',
+        'alert',
+        'critical',
+        'error',
+        'warning',
+        'notice',
+        'info',
+        'debug',
     ];
 
     protected LogManager $log;
@@ -41,12 +43,12 @@ final class FileTest extends TestCase
         $this->log->handle('debug', 'test2');
 
         $this->assertMatchesRegularExpression(
-            '/\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2} - test1/',
+            '/\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2} \[DEBUG\] test1/',
             file_get_contents('log/debug.log')
         );
 
         $this->assertMatchesRegularExpression(
-            '/\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2} - test2/',
+            '/\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2} \[DEBUG\] test2/',
             file_get_contents('log/debug.log')
         );
 
@@ -56,11 +58,11 @@ final class FileTest extends TestCase
 
     public function testData(): void
     {
-        foreach ($this->levels as $type => $threshold) {
+        foreach ($this->levels as $type) {
             $this->log->handle($type, '{0}', ['test']);
 
             $this->assertMatchesRegularExpression(
-                '/\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2} - test/',
+                '/\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2} \['.strtoupper($type).'\] test/',
                 file_get_contents('log/'.$type.'.log')
             );
         }
@@ -71,11 +73,11 @@ final class FileTest extends TestCase
 
     public function testInterpolateGet(): void
     {
-        foreach ($this->levels as $type => $threshold) {
+        foreach ($this->levels as $type) {
             $this->log->handle($type, '{get_vars}');
 
             $this->assertMatchesRegularExpression(
-                '/\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2} - '.preg_quote(json_encode($_GET, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE), '/').'/',
+                '/\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2} \['.strtoupper($type).'\] '.preg_quote(json_encode($_GET, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE), '/').'/',
                 file_get_contents('log/'.$type.'.log')
             );
         }
@@ -86,11 +88,11 @@ final class FileTest extends TestCase
 
     public function testInterpolatePost(): void
     {
-        foreach ($this->levels as $type => $threshold) {
+        foreach ($this->levels as $type) {
             $this->log->handle($type, '{post_vars}');
 
             $this->assertMatchesRegularExpression(
-                '/\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2} - '.preg_quote(json_encode($_POST, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE), '/').'/',
+                '/\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2} \['.strtoupper($type).'\] '.preg_quote(json_encode($_POST, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE), '/').'/',
                 file_get_contents('log/'.$type.'.log')
             );
         }
@@ -101,11 +103,11 @@ final class FileTest extends TestCase
 
     public function testInterpolateServer(): void
     {
-        foreach ($this->levels as $type => $threshold) {
+        foreach ($this->levels as $type) {
             $this->log->handle($type, '{server_vars}');
 
             $this->assertMatchesRegularExpression(
-                '/\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2} - '.preg_quote(json_encode($_SERVER, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE), '/').'/',
+                '/\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2} \['.strtoupper($type).'\] '.preg_quote(json_encode($_SERVER, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE), '/').'/',
                 file_get_contents('log/'.$type.'.log')
             );
         }
@@ -135,11 +137,11 @@ final class FileTest extends TestCase
 
     public function testLog(): void
     {
-        foreach ($this->levels as $type => $threshold) {
+        foreach ($this->levels as $type) {
             $this->log->handle($type, 'test');
 
             $this->assertMatchesRegularExpression(
-                '/\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2} - test/',
+                '/\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2} \['.strtoupper($type).'\] test/',
                 file_get_contents('log/'.$type.'.log')
             );
         }
@@ -153,18 +155,18 @@ final class FileTest extends TestCase
         $this->log->handle('error', 'test', scope: 'scoped');
 
         $this->assertMatchesRegularExpression(
-            '/\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2} - test/',
+            '/\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2} \[ERROR\] test/',
             file_get_contents('log/scoped.log')
         );
     }
 
     public function testSkipped(): void
     {
-        foreach ($this->levels as $type => $threshold) {
+        foreach ($this->levels as $type) {
             $this->log->clear();
             $this->log->setConfig('file', [
                 'className' => FileLogger::class,
-                'threshold' => $threshold - 1,
+                'scopes' => array_diff($this->levels, [$type]),
                 'path' => 'log',
             ]);
             $this->log->handle($type, 'test');
@@ -183,21 +185,18 @@ final class FileTest extends TestCase
         $container->use(Config::class)->set('Log', [
             'default' => [
                 'className' => FileLogger::class,
-                'threshold' => 8,
+                'scopes' => $this->levels,
                 'path' => 'log',
                 'suffix' => '',
             ],
             'scoped' => [
                 'className' => FileLogger::class,
-                'threshold' => 8,
                 'scopes' => ['scoped'],
                 'path' => 'log',
                 'file' => 'scoped',
             ],
             'all' => [
                 'className' => FileLogger::class,
-                'threshold' => 8,
-                'scopes' => null,
                 'path' => 'log',
                 'file' => 'all',
             ],
@@ -207,7 +206,7 @@ final class FileTest extends TestCase
 
     protected function tearDown(): void
     {
-        foreach ($this->levels as $type => $level) {
+        foreach ($this->levels as $type) {
             @unlink('log/'.$type.'.log');
         }
 

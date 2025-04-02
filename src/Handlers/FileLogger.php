@@ -7,7 +7,8 @@ use Fyre\FileSystem\File;
 use Fyre\Log\Logger;
 use Fyre\Utility\Path;
 
-use function gmdate;
+use function date;
+use function strtoupper;
 use function time;
 
 use const PHP_SAPI;
@@ -77,7 +78,7 @@ class FileLogger extends Logger
                 ->lock();
         }
 
-        $message = gmdate($this->config['dateFormat']).' - '.$message."\r\n";
+        $message = date($this->config['dateFormat']).' ['.strtoupper($type).'] '.$message."\r\n";
 
         $file
             ->write($message)

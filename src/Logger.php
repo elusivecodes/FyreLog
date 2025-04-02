@@ -13,8 +13,7 @@ abstract class Logger
 {
     protected static array $defaults = [
         'dateFormat' => 'Y-m-d H:i:s',
-        'threshold' => 0,
-        'scopes' => [null],
+        'scopes' => null,
     ];
 
     protected array $config;
@@ -32,14 +31,12 @@ abstract class Logger
     /**
      * Determine whether a log level can be handled.
      *
-     * @param int $level The log level.
-     * @param string|null $scope The log scope.
+     * @param string $scope The log scope.
      * @return bool Whether the logger can handle the level.
      */
-    public function canHandle(int $level, string|null $scope = null): bool
+    public function canHandle(string $scope): bool
     {
-        return $level <= $this->config['threshold'] &&
-            ($this->config['scopes'] === null || in_array($scope, $this->config['scopes']));
+        return $this->config['scopes'] === null || in_array($scope, $this->config['scopes']);
     }
 
     /**
