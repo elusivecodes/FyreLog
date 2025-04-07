@@ -39,13 +39,15 @@ final class LogManagerTest extends TestCase
             [
                 'default' => [
                     'className' => FileLogger::class,
-                    'threshold' => 8,
+                    'levels' => ['warning', 'notice', 'info', 'debug'],
                     'path' => 'log',
+                    'suffix' => '',
                 ],
                 'error' => [
                     'className' => FileLogger::class,
-                    'threshold' => 5,
+                    'levels' => ['emergency', 'alert', 'critical', 'error'],
                     'path' => 'error',
+                    'suffix' => '',
                 ],
             ],
             $this->log->getConfig()
@@ -57,8 +59,9 @@ final class LogManagerTest extends TestCase
         $this->assertSame(
             [
                 'className' => FileLogger::class,
-                'threshold' => 5,
+                'levels' => ['emergency', 'alert', 'critical', 'error'],
                 'path' => 'error',
+                'suffix' => '',
             ],
             $this->log->getConfig('error')
         );
@@ -95,7 +98,6 @@ final class LogManagerTest extends TestCase
             $this->log,
             $this->log->setConfig('test', [
                 'className' => FileLogger::class,
-                'threshold' => 1,
                 'path' => 'log',
             ])
         );
@@ -103,7 +105,6 @@ final class LogManagerTest extends TestCase
         $this->assertSame(
             [
                 'className' => FileLogger::class,
-                'threshold' => 1,
                 'path' => 'log',
             ],
             $this->log->getConfig('test')
@@ -116,7 +117,6 @@ final class LogManagerTest extends TestCase
 
         $this->log->setConfig('default', [
             'className' => FileLogger::class,
-            'threshold' => 1,
             'path' => 'log',
         ]);
     }
@@ -183,13 +183,15 @@ final class LogManagerTest extends TestCase
         $container->use(Config::class)->set('Log', [
             'default' => [
                 'className' => FileLogger::class,
-                'threshold' => 8,
+                'levels' => ['warning', 'notice', 'info', 'debug'],
                 'path' => 'log',
+                'suffix' => '',
             ],
             'error' => [
                 'className' => FileLogger::class,
-                'threshold' => 5,
+                'levels' => ['emergency', 'alert', 'critical', 'error'],
                 'path' => 'error',
+                'suffix' => '',
             ],
         ]);
         $this->log = $container->use(LogManager::class);

@@ -7,10 +7,9 @@ use Fyre\FileSystem\File;
 use Fyre\Log\Logger;
 use Fyre\Utility\Path;
 
-use function date;
-use function strtoupper;
 use function time;
 
+use const PHP_EOL;
 use const PHP_SAPI;
 
 /**
@@ -38,7 +37,7 @@ class FileLogger extends Logger
     {
         parent::__construct($options);
 
-        if (PHP_SAPI === 'cli' && !$this->config['file']) {
+        if (PHP_SAPI === 'cli') {
             $this->config['suffix'] ??= '-cli';
         }
 
@@ -50,8 +49,9 @@ class FileLogger extends Logger
      *
      * @param string $type The log type.
      * @param string $message The log message.
+     * @param array $data Additional data to interpolate.
      */
-    public function handle(string $type, string $message): void
+    public function handle(string $type, string $message, array $data = []): void
     {
         $file = ($this->config['file'] ?? $type).
             ($this->config['suffix'] ?? '').
@@ -78,10 +78,11 @@ class FileLogger extends Logger
                 ->lock();
         }
 
-        $message = date($this->config['dateFormat']).' ['.strtoupper($type).'] '.$message."\r\n";
+        $message = static::interpolate($message, $data);
+        $message = $this->format($type, $message);
 
         $file
-            ->write($message)
+            ->write($message.PHP_EOL)
             ->close();
     }
 }

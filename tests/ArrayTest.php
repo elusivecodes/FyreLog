@@ -7,22 +7,19 @@ use BadMethodCallException;
 use Fyre\Config\Config;
 use Fyre\Container\Container;
 use Fyre\Log\Exceptions\LogException;
-use Fyre\Log\Handlers\FileLogger;
+use Fyre\Log\Handlers\ArrayLogger;
 use Fyre\Log\LogManager;
 use PHPUnit\Framework\TestCase;
 
 use function array_diff;
-use function file_get_contents;
 use function json_encode;
 use function preg_quote;
-use function rmdir;
 use function strtoupper;
-use function unlink;
 
 use const JSON_THROW_ON_ERROR;
 use const JSON_UNESCAPED_UNICODE;
 
-final class FileTest extends TestCase
+final class ArrayTest extends TestCase
 {
     protected array $levels = [
         'emergency',
@@ -42,80 +39,80 @@ final class FileTest extends TestCase
         $this->log->handle('debug', 'test1');
         $this->log->handle('debug', 'test2');
 
-        $content = file_get_contents('log/debug.log');
+        $content = $this->log->use('default')->read();
 
         $this->assertMatchesRegularExpression(
             '/\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2} \[DEBUG\] test1/',
-            $content
+            $content[0] ?? ''
         );
 
         $this->assertMatchesRegularExpression(
             '/\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2} \[DEBUG\] test2/',
-            $content
+            $content[1] ?? ''
         );
 
-        $this->assertFileDoesNotExist('log/scoped.log');
-        $this->assertFileExists('log/all.log');
+        $this->assertEmpty($this->log->use('scoped')->read());
+        $this->assertNotEmpty($this->log->use('all')->read());
     }
 
     public function testData(): void
     {
-        foreach ($this->levels as $type) {
+        foreach ($this->levels as $i => $type) {
             $this->log->handle($type, '{0}', ['test']);
 
             $this->assertMatchesRegularExpression(
                 '/\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2} \['.strtoupper($type).'\] test/',
-                file_get_contents('log/'.$type.'.log')
+                $this->log->use('default')->read()[$i] ?? ''
             );
         }
 
-        $this->assertFileDoesNotExist('log/scoped.log');
-        $this->assertFileExists('log/all.log');
+        $this->assertEmpty($this->log->use('scoped')->read());
+        $this->assertNotEmpty($this->log->use('all')->read());
     }
 
     public function testInterpolateGet(): void
     {
-        foreach ($this->levels as $type) {
+        foreach ($this->levels as $i => $type) {
             $this->log->handle($type, '{get_vars}');
 
             $this->assertMatchesRegularExpression(
                 '/\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2} \['.strtoupper($type).'\] '.preg_quote(json_encode($_GET, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE), '/').'/',
-                file_get_contents('log/'.$type.'.log')
+                $this->log->use('default')->read()[$i] ?? ''
             );
         }
 
-        $this->assertFileDoesNotExist('log/scoped.log');
-        $this->assertFileExists('log/all.log');
+        $this->assertEmpty($this->log->use('scoped')->read());
+        $this->assertNotEmpty($this->log->use('all')->read());
     }
 
     public function testInterpolatePost(): void
     {
-        foreach ($this->levels as $type) {
+        foreach ($this->levels as $i => $type) {
             $this->log->handle($type, '{post_vars}');
 
             $this->assertMatchesRegularExpression(
                 '/\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2} \['.strtoupper($type).'\] '.preg_quote(json_encode($_POST, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE), '/').'/',
-                file_get_contents('log/'.$type.'.log')
+                $this->log->use('default')->read()[$i] ?? ''
             );
         }
 
-        $this->assertFileDoesNotExist('log/scoped.log');
-        $this->assertFileExists('log/all.log');
+        $this->assertEmpty($this->log->use('scoped')->read());
+        $this->assertNotEmpty($this->log->use('all')->read());
     }
 
     public function testInterpolateServer(): void
     {
-        foreach ($this->levels as $type) {
+        foreach ($this->levels as $i => $type) {
             $this->log->handle($type, '{server_vars}');
 
             $this->assertMatchesRegularExpression(
                 '/\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2} \['.strtoupper($type).'\] '.preg_quote(json_encode($_SERVER, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE), '/').'/',
-                file_get_contents('log/'.$type.'.log')
+                $this->log->use('default')->read()[$i] ?? ''
             );
         }
 
-        $this->assertFileDoesNotExist('log/scoped.log');
-        $this->assertFileExists('log/all.log');
+        $this->assertEmpty($this->log->use('scoped')->read());
+        $this->assertNotEmpty($this->log->use('all')->read());
     }
 
     public function testInvalidHandler(): void
@@ -139,17 +136,17 @@ final class FileTest extends TestCase
 
     public function testLog(): void
     {
-        foreach ($this->levels as $type) {
+        foreach ($this->levels as $i => $type) {
             $this->log->handle($type, 'test');
 
             $this->assertMatchesRegularExpression(
                 '/\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2} \['.strtoupper($type).'\] test/',
-                file_get_contents('log/'.$type.'.log')
+                $this->log->use('default')->read()[$i] ?? ''
             );
         }
 
-        $this->assertFileDoesNotExist('log/scoped.log');
-        $this->assertFileExists('log/all.log');
+        $this->assertEmpty($this->log->use('scoped')->read());
+        $this->assertNotEmpty($this->log->use('all')->read());
     }
 
     public function testScope(): void
@@ -158,7 +155,7 @@ final class FileTest extends TestCase
 
         $this->assertMatchesRegularExpression(
             '/\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2} \[ERROR\] test/',
-            file_get_contents('log/scoped.log')
+            $this->log->use('scoped')->read()[0] ?? ''
         );
     }
 
@@ -166,18 +163,14 @@ final class FileTest extends TestCase
     {
         foreach ($this->levels as $type) {
             $this->log->clear();
-            $this->log->setConfig('file', [
-                'className' => FileLogger::class,
+            $this->log->setConfig('array', [
+                'className' => ArrayLogger::class,
                 'levels' => array_diff($this->levels, [$type]),
-                'path' => 'log',
             ]);
             $this->log->handle($type, 'test');
 
-            $this->assertFileDoesNotExist('log/'.$type.'.log');
+            $this->assertEmpty($this->log->use('array')->read());
         }
-
-        $this->assertFileDoesNotExist('log/scoped.log');
-        $this->assertFileDoesNotExist('log/all.log');
     }
 
     protected function setup(): void
@@ -186,37 +179,17 @@ final class FileTest extends TestCase
         $container->singleton(Config::class);
         $container->use(Config::class)->set('Log', [
             'default' => [
-                'className' => FileLogger::class,
+                'className' => ArrayLogger::class,
                 'levels' => $this->levels,
-                'path' => 'log',
-                'suffix' => '',
             ],
             'scoped' => [
-                'className' => FileLogger::class,
+                'className' => ArrayLogger::class,
                 'scopes' => ['scoped', 'test'],
-                'path' => 'log',
-                'file' => 'scoped',
-                'suffix' => '',
             ],
             'all' => [
-                'className' => FileLogger::class,
-                'path' => 'log',
-                'file' => 'all',
-                'suffix' => '',
+                'className' => ArrayLogger::class,
             ],
         ]);
         $this->log = $container->use(LogManager::class);
-    }
-
-    protected function tearDown(): void
-    {
-        foreach ($this->levels as $type) {
-            @unlink('log/'.$type.'.log');
-        }
-
-        @unlink('log/scoped.log');
-        @unlink('log/all.log');
-
-        @rmdir('log');
     }
 }

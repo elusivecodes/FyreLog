@@ -9,20 +9,9 @@ use Fyre\Container\Container;
 use Fyre\Log\Exceptions\LogException;
 
 use function array_key_exists;
-use function array_keys;
-use function array_unique;
 use function class_exists;
-use function debug_backtrace;
 use function in_array;
-use function is_scalar;
 use function is_subclass_of;
-use function json_encode;
-use function preg_match_all;
-use function str_replace;
-use function strpos;
-
-use const JSON_THROW_ON_ERROR;
-use const JSON_UNESCAPED_UNICODE;
 
 /**
  * LogManager
@@ -112,28 +101,25 @@ class LogManager
     /**
      * Handle a message.
      *
-     * @param string $type The log type.
+     * @param string $level The log level.
      * @param string $message The log message.
      * @param array $data Additional data to interpolate.
-     * @param string|null $scope The log scope.
+     * @param array|string|null $scope The log scope(s).
      */
-    public function handle(string $type, string $message, array $data = [], string|null $scope = null): void
+    public function handle(string $level, string $message, array $data = [], array|string|null $scope = null): void
     {
-        if (!in_array($type, static::$levels)) {
+        if (!in_array($level, static::$levels)) {
             throw new BadMethodCallException();
         }
-
-        $scope ??= $type;
 
         foreach ($this->config as $key => $config) {
             $instance = static::use($key);
 
-            if (!$instance->canHandle($scope)) {
+            if (!$instance->canHandle($level, $scope)) {
                 continue;
             }
 
-            $interpolated ??= static::interpolate($message, $data);
-            $instance->handle($type, $interpolated);
+            $instance->handle($level, $message, $data);
         }
     }
 
@@ -202,58 +188,5 @@ class LogManager
     public function use(string $key = self::DEFAULT): Logger
     {
         return $this->instances[$key] ??= static::build($this->config[$key] ?? []);
-    }
-
-    /**
-     * Interpolate a message.
-     *
-     * @param string $message The log message.
-     * @param array $data Additional data to interpolate.
-     * @return string The interpolated message.
-     */
-    protected static function interpolate(string $message, array $data = []): string
-    {
-        if (strpos($message, '{') === false) {
-            return $message;
-        }
-
-        preg_match_all('/(?<!\\\\){([\w-]+)}/i', $message, $matches);
-
-        if ($matches === []) {
-            return $message;
-        }
-
-        $keys = array_unique($matches[1]);
-        $replacements = [];
-        $jsonFlags = JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE;
-
-        foreach ($keys as $key) {
-            $replaceKey = '{'.$key.'}';
-
-            if (array_key_exists($key, $data)) {
-                if (is_scalar($data[$key])) {
-                    $replacements[$replaceKey] = (string) $data[$key];
-                } else {
-                    $replacements[$replaceKey] = json_encode($data[$key], $jsonFlags);
-                }
-            } else {
-                $value = match ($key) {
-                    'backtrace' => debug_backtrace(0),
-                    'get_vars' => $_GET,
-                    'post_vars' => $_POST,
-                    'server_vars' => $_SERVER,
-                    'session_vars' => $_SESSION,
-                    default => null
-                };
-
-                if ($value !== null) {
-                    $replacements[$replaceKey] = json_encode($value, $jsonFlags);
-                }
-            }
-        }
-
-        $replacementKeys = array_keys($replacements);
-
-        return str_replace($replacementKeys, $replacements, $message);
     }
 }

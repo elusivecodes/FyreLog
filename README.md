@@ -8,6 +8,7 @@
 - [Basic Usage](#basic-usage)
 - [Methods](#methods)
 - [Loggers](#loggers)
+    - [Array](#array)
     - [File](#file)
 - [Logging](#logging)
 
@@ -94,14 +95,16 @@ $config = $logManager->getConfig();
 
 **Handle**
 
-- `$type` is a string representing the type of log.
+- `$level` is a string representing the log level .
 - `$message` is a string representing the log message.
 - `$data` is an array containing data to insert into the message string.
-- `$scope` is a string representing the log scope, and will default to *null*.
+- `$scope` is a string or array representing the log scope, and will default to *null*.
 
 ```php
-$logManager->handle($type, $message, $data);
+$logManager->handle($level, $message, $data, $scope);
 ```
+
+The supported log levels include: "*emergency*", "*alert*", "*critical*", "*error*", "*warning*", "*notice*", "*info*" and "*debug*".
 
 **Has Config**
 
@@ -167,24 +170,56 @@ Custom loggers can be created by extending `\Fyre\Log\Logger`, ensuring all belo
 
 Determine whether a log level can be handled.
 
-- `$level` is a number indicating the log level.
-- `$scope` is a string representing the log scope, and will default to *null*.
+- `$level` is a string representing the log level.
+- `$scope` is a string or array representing the log scope, and will default to *null*.
 
 ```php
 $canHandle = $logger->canHandle($level, $scope);
 ```
 
-By default, this method will return *true* if the `$scope` is contained in the `scopes` of the logger config or the `scopes` is set to *null*, otherwise *false*.
+This method will return *true* if the `$level` is contained in the `levels` of the *Logger* config (or `levels` is set to *null*), and the `$scope` is contained in `scopes` (or `$scope` is *null* and `scopes` is an empty array, or `scopes` is set to *null*).
 
 **Handle**
 
 Handle a message log.
 
-- `$type` is a string representing the type of log.
+- `$level` is a string representing the log level.
 - `$message` is a string representing the log message.
+- `$data` is an array containing data to insert into the message string.
 
 ```php
-$logger->handle($type, $message);
+$logger->handle($level, $message, $data);
+```
+
+
+## Array
+
+The Array logger can be loaded using custom configuration.
+
+- `$options` is an array containing configuration options.
+    - `className` must be set to `\Fyre\Log\Handlers\ArrayLogger`.
+    - `dateFormat` is a string representing the date format, and will default to "*Y-m-d H:i:s*".
+    - `levels` is an array containing the levels that should be handled, and will default to *null*.
+    - `scopes` is an array containing the scopes that should be handled, and will default to *[]*.
+
+```php
+$container->use(Config::class)->set('Log.array', $options);
+```
+
+**Clear**
+
+Clear the log content.
+
+```php
+$logger->clear();
+```
+
+**Read**
+
+Read the log content.
+
+```php
+$content = $logger->read();
 ```
 
 
@@ -195,7 +230,8 @@ The File logger can be loaded using custom configuration.
 - `$options` is an array containing configuration options.
     - `className` must be set to `\Fyre\Log\Handlers\FileLogger`.
     - `dateFormat` is a string representing the date format, and will default to "*Y-m-d H:i:s*".
-    - `scopes` is an array containing the scopes that should be handled, and will default to *null*.
+    - `levels` is an array containing the levels that should be handled, and will default to *null*.
+    - `scopes` is an array containing the scopes that should be handled, and will default to *[]*.
     - `path` is a string representing the directory path, and will default to "*/var/log*".
     - `file` is a string representing the file name, and will default *null* (the type of log will be used instead).
     - `suffix` is a string representing the filename suffix, and will default to *null* (or "*-cli*" if running from the CLI).
@@ -217,16 +253,17 @@ The default log levels are shown below (in order of severity).
 
 - `$message` is a string representing the log message.
 - `$data` is an array containing data to insert into the message string.
+- `$scope` is a string or array representing the log scope, and will default to *null*.
 
 ```php
-$logManager->handle('emergency', $message, $data);   // 1
-$logManager->handle('alert', $message, $data);       // 2
-$logManager->handle('critical', $message, $data);    // 3
-$logManager->handle('error', $message, $data);       // 4
-$logManager->handle('warning', $message, $data);     // 5
-$logManager->handle('notice', $message, $data);      // 6
-$logManager->handle('info', $message, $data);        // 7
-$logManager->handle('debug', $message, $data);       // 8
+$logManager->handle('emergency', $message, $data, $scope);
+$logManager->handle('alert', $message, $data, $scope);
+$logManager->handle('critical', $message, $data, $scope);
+$logManager->handle('error', $message, $data, $scope);
+$logManager->handle('warning', $message, $data, $scope);
+$logManager->handle('notice', $message, $data, $scope);
+$logManager->handle('info', $message, $data, $scope);
+$logManager->handle('debug', $message, $data, $scope);
 ```
 
 There are default placeholders that can also be used in log messages:
