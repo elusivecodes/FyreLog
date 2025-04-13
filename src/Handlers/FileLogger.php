@@ -47,13 +47,13 @@ class FileLogger extends Logger
     /**
      * Handle a message log.
      *
-     * @param string $type The log type.
+     * @param string $level The log level.
      * @param string $message The log message.
      * @param array $data Additional data to interpolate.
      */
-    public function handle(string $type, string $message, array $data = []): void
+    public function handle(string $level, string $message, array $data = []): void
     {
-        $file = ($this->config['file'] ?? $type).
+        $file = ($this->config['file'] ?? $level).
             ($this->config['suffix'] ?? '').
             ($this->config['extension'] ? '.'.$this->config['extension'] : '');
         $filePath = Path::join($this->path, $file);
@@ -69,7 +69,7 @@ class FileLogger extends Logger
             ->lock();
 
         if ($file->size() >= $this->config['maxSize']) {
-            $oldPath = Path::join($this->path, $type.'.'.time().'.'.$this->config['extension']);
+            $oldPath = Path::join($this->path, $level.'.'.time().'.'.$this->config['extension']);
 
             $file
                 ->copy($oldPath)
@@ -79,7 +79,7 @@ class FileLogger extends Logger
         }
 
         $message = static::interpolate($message, $data);
-        $message = $this->format($type, $message);
+        $message = $this->format($level, $message);
 
         $file
             ->write($message.PHP_EOL)

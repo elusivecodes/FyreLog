@@ -82,15 +82,15 @@ abstract class Logger
     /**
      * Handle a message log.
      *
-     * @param string $type The log type.
+     * @param string $level The log level.
      * @param string $message The log message.
      */
-    abstract public function handle(string $type, string $message): void;
+    abstract public function handle(string $level, string $message): void;
 
-    protected function format($type, string $message, bool $includeDate = true): string
+    protected function format($level, string $message, bool $includeDate = true): string
     {
         return ($includeDate ? date($this->config['dateFormat']).' ' : '').
-            '['.strtoupper($type).'] '.
+            '['.strtoupper($level).'] '.
             $message;
     }
 

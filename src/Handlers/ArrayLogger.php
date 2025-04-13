@@ -23,15 +23,15 @@ class ArrayLogger extends Logger
     /**
      * Handle a message log.
      *
-     * @param string $type The log type.
+     * @param string $level The log level.
      * @param string $message The log message.
      * @param array $data Additional data to interpolate.
      */
-    public function handle(string $type, string $message, array $data = []): void
+    public function handle(string $level, string $message, array $data = []): void
     {
         $message = $this->interpolate($message, $data);
 
-        $this->content[] = $this->format($type, $message);
+        $this->content[] = $this->format($level, $message);
     }
 
     /**
