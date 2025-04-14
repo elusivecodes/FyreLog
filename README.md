@@ -198,7 +198,6 @@ The Array logger can be loaded using custom configuration.
 
 - `$options` is an array containing configuration options.
     - `className` must be set to `\Fyre\Log\Handlers\ArrayLogger`.
-    - `dateFormat` is a string representing the date format, and will default to "*Y-m-d H:i:s*".
     - `levels` is an array containing the levels that should be handled, and will default to *null*.
     - `scopes` is an array containing the scopes that should be handled, and will default to *[]*.
 
