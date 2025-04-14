@@ -31,7 +31,7 @@ class ArrayLogger extends Logger
     {
         $message = $this->interpolate($message, $data);
 
-        $this->content[] = $this->format($level, $message);
+        $this->content[] = $this->format($level, $message, false);
     }
 
     /**

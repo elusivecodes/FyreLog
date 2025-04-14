@@ -13,7 +13,6 @@ use PHPUnit\Framework\TestCase;
 
 use function array_diff;
 use function json_encode;
-use function preg_quote;
 use function strtoupper;
 
 use const JSON_THROW_ON_ERROR;
@@ -41,13 +40,13 @@ final class ArrayTest extends TestCase
 
         $content = $this->log->use('default')->read();
 
-        $this->assertMatchesRegularExpression(
-            '/\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2} \[DEBUG\] test1/',
+        $this->assertSame(
+            '[DEBUG] test1',
             $content[0] ?? ''
         );
 
-        $this->assertMatchesRegularExpression(
-            '/\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2} \[DEBUG\] test2/',
+        $this->assertSame(
+            '[DEBUG] test2',
             $content[1] ?? ''
         );
 
@@ -60,8 +59,8 @@ final class ArrayTest extends TestCase
         foreach ($this->levels as $i => $level) {
             $this->log->handle($level, '{0}', ['test']);
 
-            $this->assertMatchesRegularExpression(
-                '/\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2} \['.strtoupper($level).'\] test/',
+            $this->assertSame(
+                '['.strtoupper($level).'] test',
                 $this->log->use('default')->read()[$i] ?? ''
             );
         }
@@ -75,8 +74,8 @@ final class ArrayTest extends TestCase
         foreach ($this->levels as $i => $level) {
             $this->log->handle($level, '{get_vars}');
 
-            $this->assertMatchesRegularExpression(
-                '/\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2} \['.strtoupper($level).'\] '.preg_quote(json_encode($_GET, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE), '/').'/',
+            $this->assertSame(
+                '['.strtoupper($level).'] '.json_encode($_GET, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE),
                 $this->log->use('default')->read()[$i] ?? ''
             );
         }
@@ -90,8 +89,8 @@ final class ArrayTest extends TestCase
         foreach ($this->levels as $i => $level) {
             $this->log->handle($level, '{post_vars}');
 
-            $this->assertMatchesRegularExpression(
-                '/\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2} \['.strtoupper($level).'\] '.preg_quote(json_encode($_POST, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE), '/').'/',
+            $this->assertSame(
+                '['.strtoupper($level).'] '.json_encode($_POST, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE),
                 $this->log->use('default')->read()[$i] ?? ''
             );
         }
@@ -105,8 +104,8 @@ final class ArrayTest extends TestCase
         foreach ($this->levels as $i => $level) {
             $this->log->handle($level, '{server_vars}');
 
-            $this->assertMatchesRegularExpression(
-                '/\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2} \['.strtoupper($level).'\] '.preg_quote(json_encode($_SERVER, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE), '/').'/',
+            $this->assertSame(
+                '['.strtoupper($level).'] '.json_encode($_SERVER, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE),
                 $this->log->use('default')->read()[$i] ?? ''
             );
         }
@@ -139,8 +138,8 @@ final class ArrayTest extends TestCase
         foreach ($this->levels as $i => $level) {
             $this->log->handle($level, 'test');
 
-            $this->assertMatchesRegularExpression(
-                '/\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2} \['.strtoupper($level).'\] test/',
+            $this->assertSame(
+                '['.strtoupper($level).'] test',
                 $this->log->use('default')->read()[$i] ?? ''
             );
         }
@@ -153,8 +152,8 @@ final class ArrayTest extends TestCase
     {
         $this->log->handle('error', 'test', scope: 'scoped');
 
-        $this->assertMatchesRegularExpression(
-            '/\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2} \[ERROR\] test/',
+        $this->assertSame(
+            '[ERROR] test',
             $this->log->use('scoped')->read()[0] ?? ''
         );
     }
