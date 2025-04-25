@@ -113,7 +113,7 @@ class LogManager
         }
 
         foreach ($this->config as $key => $config) {
-            $instance = static::use($key);
+            $instance = $this->use($key);
 
             if (!$instance->canHandle($level, $scope)) {
                 continue;
@@ -187,6 +187,6 @@ class LogManager
      */
     public function use(string $key = self::DEFAULT): Logger
     {
-        return $this->instances[$key] ??= static::build($this->config[$key] ?? []);
+        return $this->instances[$key] ??= $this->build($this->config[$key] ?? []);
     }
 }
