@@ -7,6 +7,7 @@ use BadMethodCallException;
 use Fyre\Config\Config;
 use Fyre\Container\Container;
 use Fyre\Log\Exceptions\LogException;
+use Fyre\Utility\Traits\MacroTrait;
 
 use function array_key_exists;
 use function class_exists;
@@ -18,6 +19,8 @@ use function is_subclass_of;
  */
 class LogManager
 {
+    use MacroTrait;
+
     public const DEFAULT = 'default';
 
     protected static array $levels = [

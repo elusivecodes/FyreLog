@@ -7,8 +7,12 @@ use Fyre\Config\Config;
 use Fyre\Container\Container;
 use Fyre\Log\Exceptions\LogException;
 use Fyre\Log\Handlers\FileLogger;
+use Fyre\Log\Logger;
 use Fyre\Log\LogManager;
+use Fyre\Utility\Traits\MacroTrait;
 use PHPUnit\Framework\TestCase;
+
+use function class_uses;
 
 final class LogManagerTest extends TestCase
 {
@@ -89,6 +93,19 @@ final class LogManagerTest extends TestCase
 
         $this->assertTrue(
             $this->log->isLoaded('error')
+        );
+    }
+
+    public function testMacroable(): void
+    {
+        $this->assertContains(
+            MacroTrait::class,
+            class_uses(LogManager::class)
+        );
+
+        $this->assertContains(
+            MacroTrait::class,
+            class_uses(Logger::class)
         );
     }
 

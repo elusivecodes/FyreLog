@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace Fyre\Log;
 
+use Fyre\Utility\Traits\MacroTrait;
+
 use function array_intersect;
 use function array_key_exists;
 use function array_keys;
@@ -26,6 +28,8 @@ use const JSON_UNESCAPED_UNICODE;
  */
 abstract class Logger
 {
+    use MacroTrait;
+
     protected static array $defaults = [
         'dateFormat' => 'Y-m-d H:i:s',
         'levels' => null,
