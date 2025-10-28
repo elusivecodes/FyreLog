@@ -3,7 +3,12 @@ declare(strict_types=1);
 
 namespace Fyre\Log;
 
+use ArrayObject;
 use Fyre\Utility\Traits\MacroTrait;
+use JsonSerializable;
+use Psr\Log\AbstractLogger;
+use Serializable;
+use Stringable;
 
 use function array_intersect;
 use function array_key_exists;
@@ -12,10 +17,15 @@ use function array_replace;
 use function array_unique;
 use function date;
 use function debug_backtrace;
+use function get_debug_type;
 use function in_array;
+use function is_array;
+use function is_object;
 use function is_scalar;
 use function json_encode;
+use function method_exists;
 use function preg_match_all;
+use function serialize;
 use function str_replace;
 use function strpos;
 use function strtoupper;
@@ -26,7 +36,7 @@ use const JSON_UNESCAPED_UNICODE;
 /**
  * Logger
  */
-abstract class Logger
+abstract class Logger extends AbstractLogger
 {
     use MacroTrait;
 
@@ -84,14 +94,14 @@ abstract class Logger
     }
 
     /**
-     * Handle a message log.
+     * Format a log message.
      *
      * @param string $level The log level.
      * @param string $message The log message.
+     * @param bool $includeDate Whether to include the date.
+     * @return string The formatted log message.
      */
-    abstract public function handle(string $level, string $message): void;
-
-    protected function format($level, string $message, bool $includeDate = true): string
+    protected function format(string $level, string $message, bool $includeDate = true): string
     {
         return ($includeDate ? date($this->config['dateFormat']).' ' : '').
             '['.strtoupper($level).'] '.
@@ -101,12 +111,14 @@ abstract class Logger
     /**
      * Interpolate a message.
      *
-     * @param string $message The log message.
+     * @param string|Stringable $message The log message.
      * @param array $data Additional data to interpolate.
      * @return string The interpolated message.
      */
-    protected static function interpolate(string $message, array $data = []): string
+    protected static function interpolate(string|Stringable $message, array $data = []): string
     {
+        $message = (string) $message;
+
         if (strpos($message, '{') === false) {
             return $message;
         }
@@ -125,10 +137,24 @@ abstract class Logger
             $replaceKey = '{'.$key.'}';
 
             if (array_key_exists($key, $data)) {
-                if (is_scalar($data[$key])) {
-                    $replacements[$replaceKey] = (string) $data[$key];
+                $value = $data[$key];
+
+                if (is_scalar($value)) {
+                    $replacements[$replaceKey] = (string) $value;
+                } else if (is_array($value) || $value instanceof JsonSerializable) {
+                    $replacements[$replaceKey] = json_encode($value, $jsonFlags);
+                } else if ($value instanceof ArrayObject) {
+                    $replacements[$replaceKey] = json_encode($value->getArrayCopy(), $jsonFlags);
+                } else if ($value instanceof Serializable) {
+                    $replacements[$replaceKey] = serialize($value);
+                } else if ($value instanceof Stringable) {
+                    $replacements[$replaceKey] = (string) $value;
+                } else if (is_object($value) && method_exists($value, 'toArray')) {
+                    $replacements[$replaceKey] = json_encode($value->toArray(), $jsonFlags);
+                } else if (is_object($value) && method_exists($value, '__debugInfo')) {
+                    $replacements[$replaceKey] = json_encode($value->__debugInfo(), $jsonFlags);
                 } else {
-                    $replacements[$replaceKey] = json_encode($data[$key], $jsonFlags);
+                    $replacements[$replaceKey] = '[unhandled type '.get_debug_type($value).']';
                 }
             } else {
                 $value = match ($key) {

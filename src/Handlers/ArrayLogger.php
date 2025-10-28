@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Fyre\Log\Handlers;
 
 use Fyre\Log\Logger;
+use Stringable;
 
 /**
  * ArrayLogger
@@ -21,17 +22,17 @@ class ArrayLogger extends Logger
     }
 
     /**
-     * Handle a message log.
+     * Log a message.
      *
-     * @param string $level The log level.
-     * @param string $message The log message.
+     * @param mixed $level The log level.
+     * @param string|Stringable $message The log message.
      * @param array $data Additional data to interpolate.
      */
-    public function handle(string $level, string $message, array $data = []): void
+    public function log(mixed $level, string|Stringable $message, array $data = []): void
     {
         $message = $this->interpolate($message, $data);
 
-        $this->content[] = $this->format($level, $message, false);
+        $this->content[] = $this->format((string) $level, $message, false);
     }
 
     /**

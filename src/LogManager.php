@@ -120,7 +120,7 @@ class LogManager
                 continue;
             }
 
-            $instance->handle($level, $message, $data);
+            $instance->log($level, $message, $data);
         }
     }
 

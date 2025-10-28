@@ -179,16 +179,16 @@ $canHandle = $logger->canHandle($level, $scope);
 
 This method will return *true* if the `$level` is contained in the `levels` of the *Logger* config (or `levels` is set to *null*), and the `$scope` is contained in `scopes` (or `$scope` is *null* and `scopes` is an empty array, or `scopes` is set to *null*).
 
-**Handle**
+**Log**
 
-Handle a message log.
+Log a message.
 
 - `$level` is a string representing the log level.
 - `$message` is a string representing the log message.
 - `$data` is an array containing data to insert into the message string.
 
 ```php
-$logger->handle($level, $message, $data);
+$logger->log($level, $message, $data);
 ```
 
 

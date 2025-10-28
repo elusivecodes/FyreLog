@@ -6,6 +6,7 @@ namespace Fyre\Log\Handlers;
 use Fyre\FileSystem\File;
 use Fyre\Log\Logger;
 use Fyre\Utility\Path;
+use Stringable;
 
 use function time;
 
@@ -45,14 +46,16 @@ class FileLogger extends Logger
     }
 
     /**
-     * Handle a message log.
+     * Log a message.
      *
-     * @param string $level The log level.
-     * @param string $message The log message.
+     * @param mixed $level The log level.
+     * @param string|Stringable $message The log message.
      * @param array $data Additional data to interpolate.
      */
-    public function handle(string $level, string $message, array $data = []): void
+    public function log(mixed $level, string|Stringable $message, array $data = []): void
     {
+        $level = (string) $level;
+
         $file = ($this->config['file'] ?? $level).
             ($this->config['suffix'] ?? '').
             ($this->config['extension'] ? '.'.$this->config['extension'] : '');
