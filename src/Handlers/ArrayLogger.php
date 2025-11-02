@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Fyre\Log\Handlers;
 
 use Fyre\Log\Logger;
+use Override;
 use Stringable;
 
 /**
@@ -28,6 +29,7 @@ class ArrayLogger extends Logger
      * @param string|Stringable $message The log message.
      * @param array $data Additional data to interpolate.
      */
+    #[Override]
     public function log(mixed $level, string|Stringable $message, array $data = []): void
     {
         $message = $this->interpolate($message, $data);

@@ -6,6 +6,7 @@ namespace Fyre\Log\Handlers;
 use Fyre\FileSystem\File;
 use Fyre\Log\Logger;
 use Fyre\Utility\Path;
+use Override;
 use Stringable;
 
 use function time;
@@ -52,6 +53,7 @@ class FileLogger extends Logger
      * @param string|Stringable $message The log message.
      * @param array $data Additional data to interpolate.
      */
+    #[Override]
     public function log(mixed $level, string|Stringable $message, array $data = []): void
     {
         $level = (string) $level;
